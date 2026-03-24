@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ticketService } from '../services';
 import { useAuth } from '../context/AuthContext';
 import TicketModal from '../components/tickets/TicketModal';
@@ -23,15 +23,19 @@ export default function TicketsPage({ adminView }) {
   const [filters, setFilters] = useState({ status: '', priority: '', category: '' });
   const [error, setError] = useState('');
 
-  const fetchTickets = async () => {
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
+  const fetchTickets = async (activeFilters) => {
     setLoading(true);
+    const f = activeFilters ?? filtersRef.current;
     try {
       let res;
       if (adminView && (isAdmin || isTechnician)) {
         const params = {};
-        if (filters.status) params.status = filters.status;
-        if (filters.priority) params.priority = filters.priority;
-        if (filters.category) params.category = filters.category;
+        if (f.status) params.status = f.status;
+        if (f.priority) params.priority = f.priority;
+        if (f.category) params.category = f.category;
         res = await ticketService.getAll(params);
       } else {
         res = await ticketService.getMy();
@@ -44,7 +48,11 @@ export default function TicketsPage({ adminView }) {
     }
   };
 
-  useEffect(() => { fetchTickets(); }, [adminView]);
+  // Re-fetch when switching between admin and user view
+  useEffect(() => {
+    fetchTickets({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminView]);
 
   const handleCreate = async (formData) => {
     const res = await ticketService.create(formData);

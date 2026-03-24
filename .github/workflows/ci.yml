@@ -10,6 +10,8 @@ jobs:
   backend:
     name: Build & Test Backend (Spring Boot)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
@@ -39,6 +41,8 @@ jobs:
   frontend:
     name: Build Frontend (React)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code

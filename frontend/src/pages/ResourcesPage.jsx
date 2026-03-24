@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { resourceService } from '../services';
 import { useAuth } from '../context/AuthContext';
 import ResourceCard from '../components/resources/ResourceCard';
@@ -17,14 +17,18 @@ export default function ResourcesPage() {
   const [editingResource, setEditingResource] = useState(null);
   const [filters, setFilters] = useState({ type: '', status: '', location: '', minCapacity: '' });
 
-  const fetchResources = async () => {
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
+  const fetchResources = async (activeFilters) => {
     setLoading(true);
+    const f = activeFilters ?? filtersRef.current;
     try {
       const params = {};
-      if (filters.type) params.type = filters.type;
-      if (filters.status) params.status = filters.status;
-      if (filters.location) params.location = filters.location;
-      if (filters.minCapacity) params.minCapacity = filters.minCapacity;
+      if (f.type) params.type = f.type;
+      if (f.status) params.status = f.status;
+      if (f.location) params.location = f.location;
+      if (f.minCapacity) params.minCapacity = f.minCapacity;
       const res = await resourceService.getAll(params);
       setResources(res.data);
     } catch (err) {
@@ -34,7 +38,10 @@ export default function ResourcesPage() {
     }
   };
 
-  useEffect(() => { fetchResources(); }, []);
+  useEffect(() => {
+    fetchResources({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFilter = (e) => {
     e.preventDefault();
@@ -113,7 +120,11 @@ export default function ResourcesPage() {
           <button type="submit" className="btn btn-primary">
             <FunnelIcon style={{ width: 16, height: 16 }} /> Filter
           </button>
-          <button type="button" className="btn btn-secondary" onClick={() => { setFilters({ type: '', status: '', location: '', minCapacity: '' }); setTimeout(fetchResources, 0); }}>
+          <button type="button" className="btn btn-secondary" onClick={() => {
+            const cleared = { type: '', status: '', location: '', minCapacity: '' };
+            setFilters(cleared);
+            fetchResources(cleared);
+          }}>
             Clear
           </button>
         </div>
