@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:smartcampus}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    open-in-view: false
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+
+# Cross-origin browser access when the SPA origin differs from the API (e.g. VITE_API_BASE_URL set).
+# Prefer same-origin /api + Vite proxy in dev to avoid CORS entirely. Override via env, e.g.:
+# APP_CORS_ALLOWED_ORIGIN_PATTERNS_0=http://localhost:*
+# APP_CORS_ALLOWED_ORIGIN_PATTERNS_1=http://192.168.1.10:*
+app:
+  security:
+    # Bootstrap admin when no ADMIN exists (override via ADMIN_USERNAME / ADMIN_PASSWORD in production).
+    bootstrap-admin-username: ${ADMIN_USERNAME:admin}
+    bootstrap-admin-password: ${ADMIN_PASSWORD:admin123}
+  cors:
+    allowed-origin-patterns:
+      - http://localhost:*
+      - http://127.0.0.1:*
+      - http://[::1]:*
+      - "*"

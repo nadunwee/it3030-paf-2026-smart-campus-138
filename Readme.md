@@ -1,176 +1,57 @@
-# IT3030 PAF 2026 - Smart Campus Operations Hub
+# Smart Campus Operations Hub
 
-Backend implementation for **Module A: Facilities & Assets Catalogue** using **Spring Boot**.
+Spring Boot REST API and React (Vite) client for campus facilities and operations.
 
-## What Is Implemented
+## Prerequisites
 
-### Module A - Facilities / Resource Management (Backend)
-- REST API base path: `http://localhost:8080/api/v1`
-- Resource entity support for:
-  - `type` (`LECTURE_HALL`, `LAB`, `MEETING_ROOM`, `EQUIPMENT`)
-  - `capacity`
-  - `location`
-  - `status` (`ACTIVE`, `OUT_OF_SERVICE`)
-  - `availabilityWindows` (`startDateTime`, `endDateTime`)
-  - soft delete (`deleted` flag)
+- Java 17+, Maven
+- Node.js 20+ (for the frontend)
+- MySQL 8+ with a database (default name `smartcampus`)
 
-### Endpoints
-- `GET /resources`
-  - Optional filters: `type`, `capacityMin`, `location`, `status`, `availableOn`
-  - Pagination: `page`, `size`
-- `GET /resources/{id}`
-- `POST /resources` (ADMIN only)
-- `PATCH /resources/{id}` (ADMIN only)
-- `DELETE /resources/{id}` (ADMIN only, soft delete)
+## Backend
 
-### Security (current phase)
-- Spring Security with HTTP Basic auth
-- In-memory users:
-  - `user` / `user123` -> role `USER`
-  - `admin` / `admin123` -> role `ADMIN`
-- Access rules:
-  - `USER`: read-only (`GET`) and only active resources
-  - `ADMIN`: full access to create/update/delete
+From `backend/`:
 
-### Validation & Error Handling
-- Request validation with Jakarta Validation
-- Availability window validation: `endDateTime` must be after `startDateTime`
-- Structured API errors via `@RestControllerAdvice` (`400`, `403`, `404`, `500`)
-
-### Persistence
-- MySQL for normal app run (`application.yml`)
-- H2 only for test scope (`application-test.yml`)
-
-### Testing
-- Integration tests for:
-  - role restrictions
-  - active-only visibility for USER
-  - `availableOn` filtering
-  - admin patch update
-
----
-
-## Tech Stack
-- Java 17
-- Spring Boot 3.3.2
-- Spring Web
-- Spring Data JPA
-- Spring Security
-- MySQL Connector/J
-- H2 (test only)
-- Maven
-
----
-
-## Project Prerequisites
-
-Install the following:
-- JDK 17
-- Maven 3.9+
-- MySQL Server 8+
-
----
-
-## MySQL Setup
-
-1. Log into MySQL as root (or another privileged user).
-2. Create database:
-
-```sql
-CREATE DATABASE IF NOT EXISTS smartcampus
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-```
-
-3. Option A (quick local): use root credentials directly.
-4. Option B (recommended): create a dedicated DB user.
-
-```sql
-CREATE USER IF NOT EXISTS 'smartcampus'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON smartcampus.* TO 'smartcampus'@'localhost';
-FLUSH PRIVILEGES;
-```
-
----
-
-## Run the Backend
-
-From project root (`.../it3030-paf-2026-smart-campus`), in PowerShell:
-
-```powershell
-$env:DB_HOST="localhost"
-$env:DB_PORT="3306"
-$env:DB_NAME="smartcampus"
-$env:DB_USER="root"
-$env:DB_PASSWORD="your_mysql_password"
-
+```bash
 mvn spring-boot:run
 ```
 
-If startup succeeds, API will be available at:
-- `http://localhost:8080`
+Configure the database via environment variables or `application.yml`:
 
----
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 
-## Quick API Test Commands
+### Bootstrap administrator (operators only)
 
-### 1) Get resources as USER
-```powershell
-curl.exe -u user:user123 "http://localhost:8080/api/v1/resources?size=5"
+The first **ADMIN** account is created automatically when **no** administrator exists in the database. Credentials are **not** shown in the web UI.
+
+Set these in production (never commit real passwords):
+
+| Variable | Purpose |
+|----------|---------|
+| `ADMIN_USERNAME` | Bootstrap admin username (default `admin`) |
+| `ADMIN_PASSWORD` | Bootstrap admin password (default `admin123` for local dev only) |
+
+YAML equivalent: `app.security.bootstrap-admin-username` and `app.security.bootstrap-admin-password`.
+
+The bootstrap username is **reserved** for self-service registration: users cannot register an account with that name.
+
+### API
+
+- `POST /api/v1/auth/register` — public; creates a **USER** account (password min 8 characters).
+- `GET /api/v1/auth/me` — authenticated; returns `{ "username", "role": "USER" \| "ADMIN" }`.
+- Facility resources under `/api/v1/resources` (see controllers).
+
+## Frontend
+
+From `frontend/`:
+
+```bash
+npm install
+npm run dev
 ```
 
-### 2) Create resource as ADMIN
-```powershell
-curl.exe -i -u admin:admin123 `
-  -H "Content-Type: application/json" `
-  -d '{
-    "type":"LAB",
-    "capacity":30,
-    "location":"Lab 1",
-    "status":"ACTIVE",
-    "availabilityWindows":[
-      {"startDateTime":"2026-03-23T10:00:00Z","endDateTime":"2026-03-23T12:00:00Z"}
-    ]
-  }' `
-  -X POST "http://localhost:8080/api/v1/resources"
-```
+For local development, leave `VITE_API_BASE_URL` unset so the Vite dev server proxies `/api` to the backend (see `vite.config.ts`).
 
-### 3) Patch resource (replace `<ID>`)
-```powershell
-curl.exe -i -u admin:admin123 `
-  -H "Content-Type: application/json" `
-  -d '{ "capacity": 99 }' `
-  -X PATCH "http://localhost:8080/api/v1/resources/<ID>"
-```
+## Sign up and sign in
 
-### 4) Soft-delete resource (replace `<ID>`)
-```powershell
-curl.exe -i -u admin:admin123 `
-  -X DELETE "http://localhost:8080/api/v1/resources/<ID>"
-```
-
----
-
-## Run Tests
-
-```powershell
-mvn test
-```
-
----
-
-## Troubleshooting
-
-- `Unknown database 'smartcampus'`
-  - Create the database in MySQL.
-- `Access denied for user ...`
-  - Check `DB_USER` and `DB_PASSWORD`.
-- Port conflict on `8080`
-  - Stop existing process on port 8080 or change server port.
-
----
-
-## Current Scope Note
-
-This repository currently includes backend work focused on **Module A only** (Facilities & Assets Catalogue).  
-Modules B, C, D, E and the React frontend can be added in later phases.
+Users can **sign up** for a standard account. **Administrator** access is provisioned via the bootstrap process above or by your deployment process—not through the public sign-up form.
