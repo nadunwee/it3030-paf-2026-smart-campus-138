@@ -11,6 +11,9 @@ public class AppSecurityProperties {
   /** Initial admin password (use ADMIN_PASSWORD env in production; never commit real secrets). */
   private String bootstrapAdminPassword = "admin123";
 
+  /** Optional Google OAuth Client ID to validate id_token audience claim. */
+  private String googleClientId = "";
+
   public String getBootstrapAdminUsername() {
     return bootstrapAdminUsername;
   }
@@ -25,5 +28,13 @@ public class AppSecurityProperties {
 
   public void setBootstrapAdminPassword(String bootstrapAdminPassword) {
     this.bootstrapAdminPassword = bootstrapAdminPassword;
+  }
+
+  public String getGoogleClientId() {
+    return googleClientId;
+  }
+
+  public void setGoogleClientId(String googleClientId) {
+    this.googleClientId = googleClientId;
   }
 }

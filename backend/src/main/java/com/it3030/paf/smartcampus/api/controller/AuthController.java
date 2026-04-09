@@ -1,13 +1,18 @@
 package com.it3030.paf.smartcampus.api.controller;
 
 import com.it3030.paf.smartcampus.api.dto.MeResponse;
+import com.it3030.paf.smartcampus.api.dto.GoogleLoginRequest;
+import com.it3030.paf.smartcampus.api.dto.GoogleLoginResponse;
 import com.it3030.paf.smartcampus.api.dto.RegisterRequest;
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.exception.DuplicateUsernameException;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import com.it3030.paf.smartcampus.security.AppSecurityProperties;
+import com.it3030.paf.smartcampus.service.GoogleTokenVerifier;
 import jakarta.validation.Valid;
+import java.security.SecureRandom;
+import java.util.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,14 +31,18 @@ public class AuthController {
   private final UserAccountRepository userAccountRepository;
   private final PasswordEncoder passwordEncoder;
   private final AppSecurityProperties securityProperties;
+  private final GoogleTokenVerifier googleTokenVerifier;
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
   public AuthController(
       UserAccountRepository userAccountRepository,
       PasswordEncoder passwordEncoder,
-      AppSecurityProperties securityProperties) {
+      AppSecurityProperties securityProperties,
+      GoogleTokenVerifier googleTokenVerifier) {
     this.userAccountRepository = userAccountRepository;
     this.passwordEncoder = passwordEncoder;
     this.securityProperties = securityProperties;
+    this.googleTokenVerifier = googleTokenVerifier;
   }
 
   @PostMapping("/register")
@@ -63,5 +72,40 @@ public class AuthController {
             .map(GrantedAuthority::getAuthority)
             .anyMatch("ROLE_ADMIN"::equals);
     return new MeResponse(authentication.getName(), admin ? "ADMIN" : "USER");
+  }
+
+  @PostMapping("/google")
+  public GoogleLoginResponse googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+    GoogleTokenVerifier.GoogleTokenInfo info = googleTokenVerifier.verify(request.getIdToken());
+    String configuredClientId = securityProperties.getGoogleClientId().trim();
+    if (!configuredClientId.isEmpty() && !configuredClientId.equals(info.audience())) {
+      throw new IllegalArgumentException("Google token audience does not match this application.");
+    }
+
+    UserAccount account =
+        userAccountRepository
+            .findByUsername(info.email())
+            .orElseGet(
+                () -> {
+                  UserAccount created = new UserAccount();
+                  created.setUsername(info.email());
+                  created.setRole(AppRole.USER);
+                  return created;
+                });
+
+    String temporaryPassword = issueTemporaryPassword();
+    account.setPasswordHash(passwordEncoder.encode(temporaryPassword));
+    UserAccount saved = userAccountRepository.save(account);
+
+    return new GoogleLoginResponse(
+        saved.getUsername(),
+        temporaryPassword,
+        saved.getRole() == AppRole.ADMIN ? "ADMIN" : "USER");
+  }
+
+  private static String issueTemporaryPassword() {
+    byte[] bytes = new byte[24];
+    SECURE_RANDOM.nextBytes(bytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
   }
 }

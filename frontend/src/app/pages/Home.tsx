@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
-import { Building2, Calendar, Wrench, Bell, Shield } from 'lucide-react'
+import { Building2, Calendar, Wrench, Bell, KeyRound } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Home() {
@@ -59,8 +59,8 @@ export default function Home() {
       id: 'E',
       title: 'Sign-in & roles',
       description:
-        'Registered users browse the catalogue; administrators manage campus resources.',
-      icon: Shield,
+        'Username/password and Google sign-in are supported for standard users; administrators manage campus resources.',
+      icon: KeyRound,
       status: 'Available',
       color: 'bg-[#59594a]/10 text-[#59594a]',
     },
@@ -100,8 +100,8 @@ export default function Home() {
             Smart Campus Operations Hub
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Find and view campus facilities and equipment. Sign in to see full details; sign up
-            to create a standard account.
+            Find and view campus facilities and equipment. Sign in with username/password or
+            Google to access your personalized dashboard.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">

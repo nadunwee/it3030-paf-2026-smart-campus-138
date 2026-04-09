@@ -9,6 +9,7 @@ import {
 import {
   clearStoredAuth,
   getStoredAuth,
+  loginWithGoogleIdToken,
   verifyCredentials,
   type StoredRole,
 } from '@/api/client'
@@ -23,6 +24,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   login: (username: string, password: string) => Promise<void>
+  loginWithGoogle: (idToken: string) => Promise<void>
   logout: () => void
   isAdmin: boolean
 }
@@ -52,6 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const loginWithGoogle = useCallback(async (idToken: string) => {
+    await loginWithGoogleIdToken(idToken)
+    const s = getStoredAuth()
+    if (!s?.username) {
+      throw new Error('Google sign-in could not establish a session.')
+    }
+    setUser({
+      username: s.username,
+      role: s.role === 'ADMIN' ? 'ADMIN' : 'USER',
+    })
+  }, [])
+
   const logout = useCallback(() => {
     clearStoredAuth()
     setUser(null)
@@ -61,10 +75,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       login,
+      loginWithGoogle,
       logout,
       isAdmin: user?.role === 'ADMIN',
     }),
-    [user, login, logout],
+    [user, login, loginWithGoogle, logout],
   )
 
   return (

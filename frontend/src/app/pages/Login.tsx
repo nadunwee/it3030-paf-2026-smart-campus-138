@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -13,14 +13,37 @@ import {
 import { Building2, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string
+            callback: (response: { credential?: string }) => void
+          }) => void
+          renderButton: (
+            element: HTMLElement,
+            options: Record<string, string | number>,
+          ) => void
+        }
+      }
+    }
+  }
+}
+
 export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const { login } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const googleButtonRef = useRef<HTMLDivElement | null>(null)
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
   const registered = Boolean(
     (location.state as { registered?: boolean } | null)?.registered,
   )
@@ -44,6 +67,70 @@ export default function Login() {
       setSubmitting(false)
     }
   }
+
+  useEffect(() => {
+    if (!googleClientId || !googleButtonRef.current) return
+
+    let cancelled = false
+    const existing = document.getElementById(
+      'google-identity-script',
+    ) as HTMLScriptElement | null
+
+    const setupButton = () => {
+      if (cancelled || !window.google || !googleButtonRef.current) return
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async ({ credential }) => {
+          if (!credential) {
+            setError('Google did not return a usable sign-in token.')
+            return
+          }
+          setError('')
+          setGoogleLoading(true)
+          try {
+            await loginWithGoogle(credential)
+            navigate('/dashboard')
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Google sign-in failed')
+          } finally {
+            setGoogleLoading(false)
+          }
+        },
+      })
+      googleButtonRef.current.innerHTML = ''
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'signin_with',
+        width: 360,
+      })
+      setGoogleReady(true)
+    }
+
+    if (window.google) {
+      setupButton()
+      return
+    }
+
+    const script = existing ?? document.createElement('script')
+    if (!existing) {
+      script.id = 'google-identity-script'
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      document.body.appendChild(script)
+    }
+    script.addEventListener('load', setupButton)
+    script.addEventListener('error', () =>
+      setError('Unable to load Google sign-in. Please try username/password.'),
+    )
+
+    return () => {
+      cancelled = true
+      script.removeEventListener('load', setupButton)
+    }
+  }, [googleClientId, loginWithGoogle, navigate])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#cde7b0]/30 via-background to-[#a3bfa8]/20 flex flex-col">
@@ -116,6 +203,31 @@ export default function Login() {
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting ? 'Signing in…' : 'Sign In'}
                 </Button>
+
+                {googleClientId ? (
+                  <div className="pt-2 space-y-2">
+                    <p className="text-xs text-center text-muted-foreground">
+                      or continue with Google
+                    </p>
+                    <div className="flex justify-center">
+                      <div ref={googleButtonRef} />
+                    </div>
+                    {!googleReady ? (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Loading Google Sign-In…
+                      </p>
+                    ) : null}
+                    {googleLoading ? (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Completing Google sign-in…
+                      </p>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="text-xs text-center text-muted-foreground pt-2">
+                    Google sign-in is disabled. Set VITE_GOOGLE_CLIENT_ID to enable it.
+                  </p>
+                )}
               </form>
             </CardContent>
           </Card>

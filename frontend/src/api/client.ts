@@ -108,6 +108,11 @@ export async function apiFetch<T = unknown>(
 }
 
 export type MeResponse = { username: string; role: StoredRole }
+export type GoogleLoginResponse = {
+  username: string
+  password: string
+  role: StoredRole
+}
 
 export async function verifyCredentials(
   username: string,
@@ -153,4 +158,18 @@ export async function registerAccount(
     const msg = await parseError(res)
     throw new Error(msg)
   }
+}
+
+export async function loginWithGoogleIdToken(idToken: string): Promise<void> {
+  const payload = (await apiFetch<GoogleLoginResponse>('/api/v1/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ idToken }),
+  })) as GoogleLoginResponse | null
+
+  if (!payload?.username || !payload?.password) {
+    throw new Error('Google sign-in response was invalid.')
+  }
+
+  const role: StoredRole = payload.role === 'ADMIN' ? 'ADMIN' : 'USER'
+  setStoredAuth(payload.username, payload.password, role)
 }

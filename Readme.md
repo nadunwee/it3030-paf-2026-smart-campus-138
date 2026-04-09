@@ -38,8 +38,15 @@ The bootstrap username is **reserved** for self-service registration: users cann
 ### API
 
 - `POST /api/v1/auth/register` — public; creates a **USER** account (password min 8 characters).
+- `POST /api/v1/auth/google` — public; accepts a Google `id_token`, verifies it, and creates/signs in a local account.
 - `GET /api/v1/auth/me` — authenticated; returns `{ "username", "role": "USER" \| "ADMIN" }`.
 - Facility resources under `/api/v1/resources` (see controllers).
+
+Google sign-in configuration:
+
+| Variable | Purpose |
+|----------|---------|
+| `GOOGLE_CLIENT_ID` | Optional. If set, backend validates the token audience (`aud`) against this client ID. |
 
 ## Frontend
 
@@ -51,6 +58,10 @@ npm run dev
 ```
 
 For local development, leave `VITE_API_BASE_URL` unset so the Vite dev server proxies `/api` to the backend (see `vite.config.ts`).
+
+To enable the Google login button in the frontend, set:
+
+- `VITE_GOOGLE_CLIENT_ID=<your Google web client ID>`
 
 ## Sign up and sign in
 
