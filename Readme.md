@@ -13,7 +13,7 @@ Spring Boot REST API and React (Vite) client for campus facilities and operation
 From `backend/`:
 
 ```bash
-mvn spring-boot:run
+$env:DB_HOST="localhost"; $env:DB_PORT="3306"; $env:DB_NAME="smartcampus"; $env:DB_USER="root"; $env:DB_PASSWORD="root"; $env:SERVER_PORT="8082"; $env:Path = "C:\jdk\jdk-17.0.10+7\bin;C:\maven\apache-maven-3.9.15\bin;" + $env:Path; cd backend; mvn spring-boot:run
 ```
 
 Configure the database via environment variables or `application.yml`:
