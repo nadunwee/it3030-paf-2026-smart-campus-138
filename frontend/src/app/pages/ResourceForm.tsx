@@ -233,7 +233,7 @@ export default function ResourceForm() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navbar />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-3xl">
@@ -245,11 +245,11 @@ export default function ResourceForm() {
           {isEditMode ? 'Back to Resource' : 'Back to Catalogue'}
         </Link>
 
-        <div className="space-y-2 mb-8">
-          <h1 className="text-3xl md:text-4xl">
+        <div className="mb-6 rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
+          <h1>
             {isEditMode ? 'Edit Resource' : 'Add New Resource'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="mt-2 text-muted-foreground">
             {isEditMode
               ? 'Update the details of this facility or asset'
               : 'Create a new bookable facility or asset'}
@@ -370,7 +370,7 @@ export default function ResourceForm() {
                 </p>
               ) : (
                 availabilityWindows.map((window, index) => (
-                  <div key={window.key} className="p-4 border rounded-lg space-y-3">
+                  <div key={window.key} className="space-y-3 rounded-lg border border-border/80 bg-muted/30 p-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">Window {index + 1}</p>
                       <Button

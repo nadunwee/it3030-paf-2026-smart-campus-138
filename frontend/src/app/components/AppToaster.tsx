@@ -14,11 +14,11 @@ function ToastRow({ item }: { item: ToastItem }) {
     <div
       role="status"
       className={cn(
-        'pointer-events-auto flex max-w-md items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg',
+        'pointer-events-auto flex max-w-md items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-lg',
         item.variant === 'success' &&
-          'border-[#a3bfa8]/50 bg-[#cde7b0]/40 text-[#59594a]',
+          'border-[#bdd4ea] bg-[#eef5fc] text-[#1f4f7f]',
         item.variant === 'error' &&
-          'border-destructive/40 bg-destructive/10 text-destructive',
+          'border-[#e7c1ba] bg-[#f8ebe8] text-[#9f4336]',
       )}
     >
       <p className="flex-1 leading-relaxed">{item.message}</p>

@@ -100,23 +100,23 @@ export default function FacilitiesCatalogue() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navbar />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-2 mb-8">
-          <h1 className="text-3xl md:text-4xl">Facilities & Assets Catalogue</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
+          <h1>Facilities & Assets Catalogue</h1>
+          <p className="mt-2 text-muted-foreground">
             Browse and manage bookable resources across campus
           </p>
         </div>
 
-        <Card className="mb-6">
+        <Card className="mb-5">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search by location or keywords…"
                     value={searchQuery}
@@ -138,7 +138,7 @@ export default function FacilitiesCatalogue() {
               </div>
 
               {showFilters && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
+                <div className="grid grid-cols-1 gap-4 border-t pt-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="space-y-2">
                     <Label htmlFor="filter-type">Type</Label>
                     <Select
@@ -228,7 +228,7 @@ export default function FacilitiesCatalogue() {
           </p>
         )}
 
-        <Card>
+        <Card className="overflow-hidden">
           <CardContent className="p-0">
             {loading && rows.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">Loading…</div>
@@ -309,7 +309,7 @@ export default function FacilitiesCatalogue() {
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-6 py-4 border-t">
+                  <div className="flex items-center justify-between border-t bg-muted/20 px-6 py-4">
                     <Button
                       variant="outline"
                       size="sm"

@@ -53,7 +53,7 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#cde7b0]/30 via-background to-[#a3bfa8]/20 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Link
           to="/"
@@ -64,20 +64,25 @@ export default function Signup() {
         </Link>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="w-full max-w-md space-y-6">
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[#7286a0] to-[#a3bfa8] mb-2">
-              <Building2 className="h-6 w-6 text-white" />
+      <div className="flex-1 px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-5xl gap-8 rounded-2xl border border-border/80 bg-card p-6 shadow-sm lg:grid-cols-2 lg:p-10">
+          <div className="space-y-4">
+            <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10">
+              <Building2 className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="text-2xl">Create an account</h1>
-            <p className="text-sm text-muted-foreground">
-              Register to browse the facilities catalogue. Administrator access is assigned by
-              your institution.
+            <h1>Create your account</h1>
+            <p className="text-muted-foreground">
+              Register to browse the SCH facilities catalogue. Administrator access is assigned
+              by your institution.
             </p>
+            <div className="space-y-2 rounded-lg border border-border/80 bg-muted/40 p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Account setup tips</p>
+              <p>Use a unique username and at least 8 characters for your password.</p>
+              <p>Standard accounts can browse resources; admin rights are assigned separately.</p>
+            </div>
           </div>
 
-          <Card className="border-2">
+          <Card>
             <CardHeader>
               <CardTitle>Sign up</CardTitle>
               <CardDescription>
@@ -118,7 +123,7 @@ export default function Signup() {
                 </div>
 
                 {error ? (
-                  <p className="text-sm text-destructive" role="alert">
+                  <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
                     {error}
                   </p>
                 ) : null}

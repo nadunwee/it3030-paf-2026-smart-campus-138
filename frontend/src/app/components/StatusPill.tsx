@@ -9,8 +9,8 @@ export function StatusPill({ status }: StatusPillProps) {
   const variant = status === 'ACTIVE' ? 'default' : 'secondary'
   const color =
     status === 'ACTIVE'
-      ? 'bg-[#cde7b0] text-[#59594a] hover:bg-[#cde7b0] border-[#a3bfa8]'
-      : 'bg-[#be6e46]/10 text-[#be6e46] hover:bg-[#be6e46]/10 border-[#be6e46]/30'
+      ? 'bg-[#e7f0fb] text-[#1f4f7f] hover:bg-[#e7f0fb] border-[#bdd4ea]'
+      : 'bg-[#f8ebe8] text-[#9f4336] hover:bg-[#f8ebe8] border-[#e7c1ba]'
 
   return (
     <Badge variant={variant} className={color}>

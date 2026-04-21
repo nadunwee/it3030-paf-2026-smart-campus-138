@@ -2,81 +2,80 @@
 
 :root {
   --font-size: 16px;
-  /* Light green-tinted canvas (design palette: #cde7b0 / #a3bfa8) */
-  --background: #ecf4e8;
-  --foreground: #59594a;
-  --card: #fbfdf9;
-  --card-foreground: #59594a;
+  --background: #f5f7fa;
+  --foreground: #1a2433;
+  --card: #ffffff;
+  --card-foreground: #1a2433;
   --popover: #ffffff;
-  --popover-foreground: #59594a;
-  --primary: #7286a0;
+  --popover-foreground: #1a2433;
+  --primary: #1f4f7f;
   --primary-foreground: #ffffff;
-  --secondary: #cde7b0;
-  --secondary-foreground: #59594a;
-  --muted: #e2eee0;
-  --muted-foreground: #7a7a6a;
-  --accent: #cde7b0;
-  --accent-foreground: #59594a;
-  --destructive: #be6e46;
+  --secondary: #e9eef5;
+  --secondary-foreground: #2a3648;
+  --muted: #eef2f6;
+  --muted-foreground: #5d6b7f;
+  --accent: #edf3f9;
+  --accent-foreground: #253244;
+  --destructive: #b24d3d;
   --destructive-foreground: #ffffff;
-  --border: rgba(89, 89, 74, 0.15);
+  --border: #d6dee8;
   --input: transparent;
-  --input-background: #f0f6ec;
-  --switch-background: #a3bfa8;
-  --font-weight-medium: 500;
+  --input-background: #ffffff;
+  --switch-background: #c8d3e0;
+  --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --ring: #7286a0;
-  --chart-1: #7286a0;
-  --chart-2: #a3bfa8;
-  --chart-3: #be6e46;
-  --chart-4: #cde7b0;
-  --chart-5: #59594a;
-  --radius: 0.75rem;
-  --sidebar: #ecf4e8;
-  --sidebar-foreground: #59594a;
-  --sidebar-primary: #7286a0;
+  --ring: #2e6aa3;
+  --chart-1: #1f4f7f;
+  --chart-2: #4e6d8f;
+  --chart-3: #b24d3d;
+  --chart-4: #6b86a5;
+  --chart-5: #2b3646;
+  --radius: 0.65rem;
+  --sidebar: #f5f7fa;
+  --sidebar-foreground: #1a2433;
+  --sidebar-primary: #1f4f7f;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #cde7b0;
-  --sidebar-accent-foreground: #59594a;
-  --sidebar-border: rgba(89, 89, 74, 0.15);
-  --sidebar-ring: #7286a0;
+  --sidebar-accent: #edf3f9;
+  --sidebar-accent-foreground: #253244;
+  --sidebar-border: #d6dee8;
+  --sidebar-ring: #2e6aa3;
 }
 
 .dark {
-  --background: #2a2a22;
-  --foreground: #f5f5f0;
-  --card: #35352b;
-  --card-foreground: #f5f5f0;
-  --popover: #35352b;
-  --popover-foreground: #f5f5f0;
-  --primary: #a3bfa8;
-  --primary-foreground: #2a2a22;
-  --secondary: #59594a;
-  --secondary-foreground: #cde7b0;
-  --muted: #3d3d33;
-  --muted-foreground: #a3a397;
-  --accent: #7286a0;
-  --accent-foreground: #f5f5f0;
-  --destructive: #be6e46;
+  --background: #0f1620;
+  --foreground: #e8edf5;
+  --card: #141f2d;
+  --card-foreground: #e8edf5;
+  --popover: #141f2d;
+  --popover-foreground: #e8edf5;
+  --primary: #70a1d3;
+  --primary-foreground: #0f1620;
+  --secondary: #202d3e;
+  --secondary-foreground: #d2dced;
+  --muted: #1b2838;
+  --muted-foreground: #9fb0c7;
+  --accent: #20334c;
+  --accent-foreground: #d6e1f1;
+  --destructive: #d97767;
   --destructive-foreground: #ffffff;
-  --border: rgba(163, 191, 168, 0.2);
-  --input: rgba(163, 191, 168, 0.2);
-  --ring: #a3bfa8;
-  --font-weight-medium: 500;
+  --border: #2a3a4f;
+  --input: #2a3a4f;
+  --ring: #70a1d3;
+  --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --chart-1: #70a1d3;
+  --chart-2: #a4bfdc;
+  --chart-3: #d97767;
+  --chart-4: #4e6d8f;
+  --chart-5: #d2dced;
+  --sidebar: #0f1620;
+  --sidebar-foreground: #e8edf5;
+  --sidebar-primary: #70a1d3;
+  --sidebar-primary-foreground: #0f1620;
+  --sidebar-accent: #20334c;
+  --sidebar-accent-foreground: #d6e1f1;
+  --sidebar-border: #2a3a4f;
+  --sidebar-ring: #70a1d3;
 }
 
 @theme inline {
@@ -126,7 +125,12 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'IBM Plex Sans', 'Avenir Next', 'Segoe UI', 'Helvetica Neue',
+      sans-serif;
+    background-image:
+      radial-gradient(circle at 12% -4%, rgba(46, 106, 163, 0.08), transparent 34%),
+      linear-gradient(to bottom, #f8fafc, #f5f7fa);
   }
 
   html {
@@ -134,21 +138,23 @@
   }
 
   h1 {
-    font-size: var(--text-2xl);
+    font-size: var(--text-3xl);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    font-size: var(--text-xl);
+    font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
   h3 {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.3;
   }
 
   h4 {
@@ -173,5 +179,70 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@keyframes schRevealUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes schFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes schPulseSoft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.52;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.8;
+  }
+}
+
+@keyframes schOrbit {
+  from {
+    transform: rotate(0deg) translateX(10px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(10px) rotate(-360deg);
+  }
+}
+
+@layer utilities {
+  .sch-reveal {
+    animation: schRevealUp 520ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  }
+
+  .sch-float {
+    animation: schFloat 6.8s ease-in-out infinite;
+  }
+
+  .sch-float-delayed {
+    animation: schFloat 8.2s ease-in-out infinite;
+    animation-delay: 1.4s;
+  }
+
+  .sch-pulse-soft {
+    animation: schPulseSoft 7.2s ease-in-out infinite;
+  }
+
+  .sch-orbit {
+    animation: schOrbit 16s linear infinite;
   }
 }

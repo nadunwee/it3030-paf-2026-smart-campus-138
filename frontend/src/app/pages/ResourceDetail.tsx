@@ -122,7 +122,7 @@ export default function ResourceDetail() {
 
   return (
     <Fragment>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <Navbar />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -137,7 +137,7 @@ export default function ResourceDetail() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div className="space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-3xl md:text-4xl">{resourceShortTitle(facility)}</h1>
+              <h1>{resourceShortTitle(facility)}</h1>
               <StatusPill status={facility.status} />
             </div>
             <p className="text-muted-foreground">
@@ -172,8 +172,8 @@ export default function ResourceDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-[#7286a0]/10">
-                  <Users className="h-5 w-5 text-[#7286a0]" />
+                <div className="rounded-lg bg-accent p-2">
+                  <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Capacity</p>
@@ -182,8 +182,8 @@ export default function ResourceDetail() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-[#a3bfa8]/10">
-                  <MapPin className="h-5 w-5 text-[#a3bfa8]" />
+                <div className="rounded-lg bg-accent p-2">
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Location</p>
@@ -211,7 +211,7 @@ export default function ResourceDetail() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-[#7286a0]" />
+                <Calendar className="h-5 w-5 text-primary" />
                 <CardTitle>Availability Windows</CardTitle>
               </div>
               <CardDescription>Scheduled times when this resource is available</CardDescription>
@@ -226,7 +226,7 @@ export default function ResourceDetail() {
                   {facility.availabilityWindows.map((window, idx) => (
                     <div
                       key={`${window.startDateTime}-${window.endDateTime}-${idx}`}
-                      className="p-3 rounded-lg bg-[#cde7b0]/20 border-2 border-[#a3bfa8]/30"
+                      className="rounded-lg border border-border/80 bg-muted/30 p-3"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
                         <div className="flex-1">
