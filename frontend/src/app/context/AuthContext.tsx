@@ -43,11 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => userFromStorage())
 
   const login = useCallback(async (username: string, password: string) => {
-    await verifyCredentials(username, password)
+    const normalizedUsername = username.trim()
+    await verifyCredentials(normalizedUsername, password)
     const s = getStoredAuth()
     const role: StoredRole = s?.role === 'ADMIN' ? 'ADMIN' : 'USER'
     setUser({
-      username,
+      username: normalizedUsername,
       role,
     })
   }, [])

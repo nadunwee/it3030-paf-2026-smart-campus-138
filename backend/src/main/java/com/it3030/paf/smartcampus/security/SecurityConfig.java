@@ -3,6 +3,7 @@ package com.it3030.paf.smartcampus.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.http.MediaType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -44,8 +45,9 @@ public class SecurityConfig {
           try {
             applyCorsIfNeeded(request, response, corsConfigurationSource);
             if (!response.isCommitted()) {
-              response.setHeader("WWW-Authenticate", "Basic realm=\"Realm\"");
+              response.setContentType(MediaType.APPLICATION_JSON_VALUE);
               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+              response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Invalid username or password.\"}");
             }
           } catch (IOException e) {
             throw new RuntimeException(e);
@@ -55,7 +57,9 @@ public class SecurityConfig {
           try {
             applyCorsIfNeeded(request, response, corsConfigurationSource);
             if (!response.isCommitted()) {
+              response.setContentType(MediaType.APPLICATION_JSON_VALUE);
               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+              response.getWriter().write("{\"error\":\"Forbidden\",\"message\":\"Access denied.\"}");
             }
           } catch (IOException e) {
             throw new RuntimeException(e);
@@ -82,4 +86,3 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 }
-

@@ -113,7 +113,8 @@ export async function verifyCredentials(
   username: string,
   password: string,
 ): Promise<void> {
-  const token = btoa(`${username}:${password}`)
+  const normalizedUsername = username.trim()
+  const token = btoa(`${normalizedUsername}:${password}`)
   const base = getApiBase()
   const url = `${base}/api/v1/auth/me`
   const res = await fetch(url, {
@@ -128,7 +129,7 @@ export async function verifyCredentials(
   }
   const me = (await res.json()) as MeResponse
   const role: StoredRole = me.role === 'ADMIN' ? 'ADMIN' : 'USER'
-  setStoredAuth(username, password, role)
+  setStoredAuth(normalizedUsername, password, role)
 }
 
 export async function registerAccount(
