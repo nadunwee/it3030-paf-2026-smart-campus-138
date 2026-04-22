@@ -2,18 +2,21 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
 import {
   clearStoredAuth,
+  getCurrentSessionUser,
   getStoredAuth,
+  updateStoredRole,
   verifyCredentials,
   type StoredRole,
 } from '@/api/client'
 
-export type UserRole = 'USER' | 'ADMIN'
+export type UserRole = 'ADMIN' | 'STUDENT' | 'TEACHER'
 
 interface User {
   id?: number
@@ -26,6 +29,8 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>
   logout: () => void
   isAdmin: boolean
+  isStudent: boolean
+  isTeacher: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -33,7 +38,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 function userFromStorage(): User | null {
   const s = getStoredAuth()
   if (!s?.username) return null
-  const role: UserRole = s.role === 'ADMIN' ? 'ADMIN' : 'USER'
+  const role: UserRole = s.role ?? 'STUDENT'
   return {
     id: s.userId,
     username: s.username,
@@ -43,12 +48,45 @@ function userFromStorage(): User | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => userFromStorage())
+  const username = user?.username
+
+  useEffect(() => {
+    if (!username) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const me = await getCurrentSessionUser()
+        if (!me || cancelled) return
+        updateStoredRole(me.role)
+        setUser((current) => {
+          if (!current) return current
+          if (
+            current.id === me.id &&
+            current.username === me.username &&
+            current.role === me.role
+          ) {
+            return current
+          }
+          return {
+            id: me.id,
+            username: me.username,
+            role: me.role,
+          }
+        })
+      } catch {
+        // Keep local session state; API layer handles 401 cleanup.
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [username])
 
   const login = useCallback(async (username: string, password: string) => {
     const normalizedUsername = username.trim()
     await verifyCredentials(normalizedUsername, password)
     const s = getStoredAuth()
-    const role: StoredRole = s?.role === 'ADMIN' ? 'ADMIN' : 'USER'
+    const role: StoredRole = s?.role ?? 'STUDENT'
     setUser({
       id: s?.userId,
       username: normalizedUsername,
@@ -67,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       isAdmin: user?.role === 'ADMIN',
+      isStudent: user?.role === 'STUDENT',
+      isTeacher: user?.role === 'TEACHER',
     }),
     [user, login, logout],
   )

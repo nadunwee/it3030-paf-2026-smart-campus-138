@@ -4,7 +4,7 @@ public class MeResponse {
 
   private Long id;
   private String username;
-  /** "USER" or "ADMIN" */
+  /** "ADMIN", "STUDENT", or "TEACHER" */
   private String role;
 
   public MeResponse() {}

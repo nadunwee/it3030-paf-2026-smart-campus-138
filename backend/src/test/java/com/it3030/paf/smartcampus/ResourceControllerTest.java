@@ -13,9 +13,14 @@ import com.it3030.paf.smartcampus.api.dto.ResourceCreateRequest;
 import com.it3030.paf.smartcampus.api.dto.ResourcePatchRequest;
 import com.it3030.paf.smartcampus.domain.AvailabilityWindow;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
+import com.it3030.paf.smartcampus.domain.Notification;
+import com.it3030.paf.smartcampus.domain.UserAccount;
+import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
+import com.it3030.paf.smartcampus.repository.NotificationRepository;
+import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -35,15 +40,19 @@ public class ResourceControllerTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private FacilityResourceRepository repository;
+  @Autowired private NotificationRepository notificationRepository;
+  @Autowired private UserAccountRepository userAccountRepository;
   @Autowired private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
+    notificationRepository.deleteAll();
     repository.deleteAll();
+    userAccountRepository.deleteAll();
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = "STUDENT")
   void postResources_userForbidden() throws Exception {
     String json =
         """
@@ -62,7 +71,7 @@ public class ResourceControllerTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = "STUDENT")
   void getResources_userSeesOnlyActive() throws Exception {
     FacilityResource active = new FacilityResource();
     active.setType(ResourceType.LAB);
@@ -87,7 +96,7 @@ public class ResourceControllerTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = "STUDENT")
   void getResources_availableOnFiltersAvailabilityWindow() throws Exception {
     OffsetDateTime dt = OffsetDateTime.parse("2026-03-23T11:00:00Z");
     FacilityResource active1 = new FacilityResource();
@@ -150,5 +159,53 @@ public class ResourceControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.capacity", is(99)));
   }
-}
 
+  @Test
+  @WithMockUser(username = "admin1", roles = "ADMIN")
+  void postResources_adminCreate_notifiesRelevantUsersIndividually() throws Exception {
+    createUser("admin1", AppRole.ADMIN);
+    createUser("admin2", AppRole.ADMIN);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    UserAccount bob = createUser("bob", AppRole.STUDENT);
+
+    String json =
+        """
+        {
+          "type":"LECTURE_HALL",
+          "capacity":100,
+          "location":"Room X",
+          "status":"ACTIVE",
+          "availabilityWindows":[]
+        }
+        """;
+
+    mockMvc
+        .perform(post("/api/v1/resources").contentType("application/json").content(json))
+        .andExpect(status().isCreated());
+
+    List<Notification> aliceNotifications =
+        notificationRepository.findByTargetUserIdOrderByCreatedAtDesc(
+            alice.getId(), org.springframework.data.domain.PageRequest.of(0, 10)).getContent();
+    List<Notification> bobNotifications =
+        notificationRepository.findByTargetUserIdOrderByCreatedAtDesc(
+            bob.getId(), org.springframework.data.domain.PageRequest.of(0, 10)).getContent();
+    List<Notification> adminNotifications =
+        notificationRepository.findByTargetUserIdOrderByCreatedAtDesc(
+            userAccountRepository.findByUsername("admin1").orElseThrow().getId(),
+            org.springframework.data.domain.PageRequest.of(0, 10)).getContent();
+
+    org.junit.jupiter.api.Assertions.assertEquals(1, aliceNotifications.size());
+    org.junit.jupiter.api.Assertions.assertEquals(1, bobNotifications.size());
+    org.junit.jupiter.api.Assertions.assertTrue(adminNotifications.isEmpty());
+    org.junit.jupiter.api.Assertions.assertNotEquals(
+        aliceNotifications.get(0).getNotificationId(), bobNotifications.get(0).getNotificationId());
+  }
+
+  private UserAccount createUser(String username, AppRole role) {
+    UserAccount user = new UserAccount();
+    user.setUsername(username);
+    user.setPasswordHash("hash");
+    user.setRole(role);
+    return userAccountRepository.save(user);
+  }
+}

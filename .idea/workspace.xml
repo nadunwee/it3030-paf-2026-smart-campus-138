@@ -4,15 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1f2c02f-f648-4e56-bd0e-d156ce63b524" name="Changes" comment="add booking management">
+    <list default="true" id="c1f2c02f-f648-4e56-bd0e-d156ce63b524" name="Changes" comment="add ticketing management">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/BookingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/ResourceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/ResourceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/dto/MeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/dto/MeResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/enums/AppRole.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/enums/AppRole.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/BookingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/FacilityResourceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/FacilityResourceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/BookingControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/BookingControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/DashboardControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/DashboardControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/ResourceControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/ResourceControllerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/client.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/components/Navbar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/Dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/Home.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/routes.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/routes.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,7 +104,7 @@
       <updated>1776501345575</updated>
       <workItem from="1776501347823" duration="4746000" />
       <workItem from="1776793180645" duration="3825000" />
-      <workItem from="1776847573001" duration="5320000" />
+      <workItem from="1776847573001" duration="8160000" />
     </task>
     <task id="LOCAL-00001" summary="added changes">
       <option name="closed" value="true" />
@@ -120,7 +130,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776851500554</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add ticketing management">
+      <option name="closed" value="true" />
+      <created>1776855406072</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1776855406072</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -141,6 +159,7 @@
     <MESSAGE value="added changes" />
     <MESSAGE value="frontend changes" />
     <MESSAGE value="add booking management" />
-    <option name="LAST_COMMIT_MESSAGE" value="add booking management" />
+    <MESSAGE value="add ticketing management" />
+    <option name="LAST_COMMIT_MESSAGE" value="add ticketing management" />
   </component>
 </project>

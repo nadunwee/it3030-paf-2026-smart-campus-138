@@ -38,7 +38,7 @@ public class BookingController {
   }
 
   @PostMapping
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<BookingResponse> createBooking(
       @Valid @RequestBody BookingCreateRequest request, Authentication authentication) {
     BookingResponse created = bookingService.createBooking(request, authentication.getName());
@@ -46,7 +46,7 @@ public class BookingController {
   }
 
   @GetMapping("/my")
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<Page<BookingResponse>> myBookings(
       @RequestParam(defaultValue = "0", name = "page") int page,
       @RequestParam(defaultValue = "20", name = "size") int size,
@@ -75,8 +75,10 @@ public class BookingController {
   @PatchMapping("/{id}/decision")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BookingResponse> decideBooking(
-      @PathVariable("id") Long bookingId, @Valid @RequestBody BookingDecisionRequest request) {
-    BookingResponse response = bookingService.decideBooking(bookingId, request.getStatus());
+      @PathVariable("id") Long bookingId,
+      @Valid @RequestBody BookingDecisionRequest request,
+      Authentication authentication) {
+    BookingResponse response = bookingService.decideBooking(bookingId, request.getStatus(), authentication.getName());
     return ResponseEntity.ok(response);
   }
 

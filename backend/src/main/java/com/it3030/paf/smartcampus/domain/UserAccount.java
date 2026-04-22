@@ -8,7 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "user_accounts")
@@ -27,6 +30,12 @@ public class UserAccount {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 16)
   private AppRole role;
+
+  @Column(name = "created_at", nullable = false)
+  private OffsetDateTime createdAt;
+
+  @Column(name = "updated_at", nullable = false)
+  private OffsetDateTime updatedAt;
 
   public Long getId() {
     return id;
@@ -58,5 +67,35 @@ public class UserAccount {
 
   public void setRole(AppRole role) {
     this.role = role;
+  }
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public OffsetDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(OffsetDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @PrePersist
+  void onCreate() {
+    OffsetDateTime now = OffsetDateTime.now();
+    if (createdAt == null) {
+      createdAt = now;
+    }
+    updatedAt = now;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    updatedAt = OffsetDateTime.now();
   }
 }

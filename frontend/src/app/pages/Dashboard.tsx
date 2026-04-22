@@ -14,7 +14,6 @@ import {
   Building2,
   Calendar,
   Wrench,
-  Bell,
   Shield,
   ArrowRight,
 } from 'lucide-react'
@@ -23,7 +22,7 @@ import { apiFetch } from '@/api/client'
 import type { DashboardSummaryResponse } from '@/api/dashboard'
 
 export default function Dashboard() {
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isStudent, isTeacher } = useAuth()
   const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null)
   const [summaryError, setSummaryError] = useState<string | null>(null)
 
@@ -53,13 +52,15 @@ export default function Dashboard() {
     }
   }, [user])
 
+  type ModuleStatus = 'available' | 'coming-soon'
+
   const modules = [
     {
       id: 'A',
       title: 'Facilities & Assets',
       description: 'Browse and manage campus resources with filters and detailed status.',
       icon: Building2,
-      status: 'available' as const,
+      status: 'available' as ModuleStatus,
       link: '/facilities',
     },
     {
@@ -67,7 +68,7 @@ export default function Dashboard() {
       title: 'Booking Management',
       description: 'Submit and track booking requests with approval workflows.',
       icon: Calendar,
-      status: 'available' as const,
+      status: 'available' as ModuleStatus,
       link: '/bookings',
     },
     {
@@ -75,24 +76,16 @@ export default function Dashboard() {
       title: 'Maintenance & Tickets',
       description: 'Report issues and monitor progress for maintenance tasks.',
       icon: Wrench,
-      status: 'available' as const,
+      status: (isAdmin || isStudent ? 'available' : 'coming-soon') as ModuleStatus,
       link: '/tickets',
     },
     {
       id: 'D',
-      title: 'Notifications',
-      description: 'Stay updated on bookings and service interruptions.',
-      icon: Bell,
-      status: 'coming-soon' as const,
-      link: '#',
-    },
-    {
-      id: 'E',
       title: 'Access Control',
       description: 'Centralize authentication and role governance across modules.',
       icon: Shield,
-      status: 'coming-soon' as const,
-      link: '#',
+      status: (isAdmin ? 'available' : 'coming-soon') as ModuleStatus,
+      link: '/admin/users',
     },
   ]
 
@@ -133,16 +126,22 @@ export default function Dashboard() {
             <div className="space-y-2">
               <h1>Welcome, {user.username}</h1>
               <p className="text-muted-foreground">
-                {isAdmin ? 'Administrator access enabled.' : 'Standard user access enabled.'}
+                {isAdmin
+                  ? 'Administrator access enabled.'
+                  : isTeacher
+                    ? 'Teacher access enabled.'
+                    : 'Student access enabled.'}
               </p>
               <p className="max-w-2xl text-sm text-muted-foreground">
                 {isAdmin
                   ? 'You can create, edit, and remove resources, review all statuses, and approve bookings.'
-                  : 'You can browse resources, submit booking requests, and track approvals.'}
+                  : isTeacher
+                    ? 'You can browse resources and submit booking requests with your teacher permissions.'
+                    : 'You can browse resources, submit booking requests, and manage your tickets.'}
               </p>
             </div>
             <Badge variant={isAdmin ? 'default' : 'secondary'} className="w-fit">
-              {isAdmin ? 'Admin session' : 'User session'}
+              {isAdmin ? 'Admin session' : isTeacher ? 'Teacher session' : 'Student session'}
             </Badge>
           </div>
           {summaryError && (

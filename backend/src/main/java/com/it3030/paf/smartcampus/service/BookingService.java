@@ -5,7 +5,10 @@ import com.it3030.paf.smartcampus.api.dto.BookingResponse;
 import com.it3030.paf.smartcampus.domain.Booking;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
 import com.it3030.paf.smartcampus.domain.UserAccount;
+import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
+import com.it3030.paf.smartcampus.domain.enums.NotificationType;
+import com.it3030.paf.smartcampus.domain.enums.RelatedEntityType;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.exception.BookingConflictException;
 import com.it3030.paf.smartcampus.exception.ResourceNotFoundException;
@@ -18,6 +21,7 @@ import java.time.OffsetDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +31,17 @@ public class BookingService {
   private final BookingRepository bookingRepository;
   private final FacilityResourceRepository facilityResourceRepository;
   private final UserAccountRepository userAccountRepository;
+  private final NotificationService notificationService;
 
   public BookingService(
       BookingRepository bookingRepository,
       FacilityResourceRepository facilityResourceRepository,
-      UserAccountRepository userAccountRepository) {
+      UserAccountRepository userAccountRepository,
+      NotificationService notificationService) {
     this.bookingRepository = bookingRepository;
     this.facilityResourceRepository = facilityResourceRepository;
     this.userAccountRepository = userAccountRepository;
+    this.notificationService = notificationService;
   }
 
   @Transactional
@@ -66,7 +73,30 @@ public class BookingService {
     booking.setStatus(BookingStatus.PENDING);
     booking.setApprovedAt(null);
 
-    return toResponse(bookingRepository.save(booking));
+    Booking saved = bookingRepository.save(booking);
+
+    notificationService.notifyUser(
+        currentUser,
+        NotificationType.BOOKING_REQUEST_SUBMITTED,
+        "Booking request submitted",
+        "Your booking request for " + saved.getFacilityName() + " is pending admin approval.",
+        RelatedEntityType.BOOKING,
+        saved.getBookingId(),
+        "/bookings",
+        currentUser);
+
+    if (currentUser.getRole() != AppRole.ADMIN) {
+      notificationService.notifyAdmins(
+          NotificationType.BOOKING_APPROVAL_REQUIRED,
+          "Booking approval required",
+          currentUser.getUsername() + " submitted a booking request for " + saved.getFacilityName() + ".",
+          RelatedEntityType.BOOKING,
+          saved.getBookingId(),
+          "/bookings",
+          currentUser);
+    }
+
+    return toResponse(saved);
   }
 
   @Transactional(readOnly = true)
@@ -90,9 +120,14 @@ public class BookingService {
   }
 
   @Transactional
-  public BookingResponse decideBooking(Long bookingId, BookingStatus decisionStatus) {
+  public BookingResponse decideBooking(Long bookingId, BookingStatus decisionStatus, String adminUsername) {
     if (decisionStatus != BookingStatus.APPROVED && decisionStatus != BookingStatus.REJECTED) {
       throw new IllegalArgumentException("Only APPROVED or REJECTED decisions are allowed");
+    }
+
+    UserAccount admin = getRequiredUser(adminUsername);
+    if (admin.getRole() != AppRole.ADMIN) {
+      throw new AccessDeniedException("Only admin can decide bookings");
     }
 
     Booking booking =
@@ -128,7 +163,37 @@ public class BookingService {
     }
 
     booking.setStatus(decisionStatus);
-    return toResponse(bookingRepository.save(booking));
+    Booking saved = bookingRepository.save(booking);
+
+    if (decisionStatus == BookingStatus.APPROVED) {
+      notificationService.notifyUser(
+          saved.getBookedByUser(),
+          NotificationType.BOOKING_APPROVED,
+          "Booking approved",
+          "Your booking for "
+              + saved.getFacilityName()
+              + " from "
+              + saved.getBookedFrom()
+              + " to "
+              + saved.getBookedTo()
+              + " has been confirmed.",
+          RelatedEntityType.BOOKING,
+          saved.getBookingId(),
+          "/bookings",
+          admin);
+    } else {
+      notificationService.notifyUser(
+          saved.getBookedByUser(),
+          NotificationType.BOOKING_REJECTED,
+          "Booking rejected",
+          "Your booking request for " + saved.getFacilityName() + " was rejected.",
+          RelatedEntityType.BOOKING,
+          saved.getBookingId(),
+          "/bookings",
+          admin);
+    }
+
+    return toResponse(saved);
   }
 
   @Transactional(readOnly = true)

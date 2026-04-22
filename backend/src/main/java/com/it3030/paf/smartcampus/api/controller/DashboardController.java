@@ -20,7 +20,7 @@ public class DashboardController {
   }
 
   @GetMapping("/summary")
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<DashboardSummaryResponse> summary(Authentication authentication) {
     boolean isAdmin =
         authentication != null

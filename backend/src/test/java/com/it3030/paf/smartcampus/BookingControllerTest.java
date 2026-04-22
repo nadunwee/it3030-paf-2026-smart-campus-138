@@ -17,6 +17,7 @@ import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
+import com.it3030.paf.smartcampus.repository.NotificationRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,19 +37,21 @@ public class BookingControllerTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private BookingRepository bookingRepository;
   @Autowired private FacilityResourceRepository facilityResourceRepository;
+  @Autowired private NotificationRepository notificationRepository;
   @Autowired private UserAccountRepository userAccountRepository;
 
   @BeforeEach
   void setUp() {
+    notificationRepository.deleteAll();
     bookingRepository.deleteAll();
     facilityResourceRepository.deleteAll();
     userAccountRepository.deleteAll();
   }
 
   @Test
-  @WithMockUser(username = "alice", roles = "USER")
+  @WithMockUser(username = "alice", roles = "STUDENT")
   void createBooking_userCreatesPendingBooking() throws Exception {
-    UserAccount alice = createUser("alice", AppRole.USER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Hall A");
 
     String json =
@@ -76,7 +79,7 @@ public class BookingControllerTest {
   @WithMockUser(username = "admin", roles = "ADMIN")
   void approveBooking_blocksOverlappingApproval() throws Exception {
     createUser("admin", AppRole.ADMIN);
-    UserAccount alice = createUser("alice", AppRole.USER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Lab 2");
 
     Booking first = createBooking(facility, alice, BookingStatus.PENDING, "2026-06-10T09:00:00Z", "2026-06-10T10:00:00Z");
@@ -107,7 +110,7 @@ public class BookingControllerTest {
   @WithMockUser(username = "admin", roles = "ADMIN")
   void rejectBooking_keepsFacilityAvailableForInterval() throws Exception {
     createUser("admin", AppRole.ADMIN);
-    UserAccount alice = createUser("alice", AppRole.USER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Room 204");
 
     Booking pending =
@@ -142,9 +145,9 @@ public class BookingControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "alice", roles = "USER")
+  @WithMockUser(username = "alice", roles = "STUDENT")
   void decisionEndpoint_userForbidden() throws Exception {
-    UserAccount alice = createUser("alice", AppRole.USER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Room 101");
     Booking pending =
         createBooking(

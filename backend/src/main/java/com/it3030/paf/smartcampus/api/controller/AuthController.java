@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +50,7 @@ public class AuthController {
     UserAccount account = new UserAccount();
     account.setUsername(username);
     account.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-    account.setRole(AppRole.USER);
+    account.setRole(AppRole.STUDENT);
     userAccountRepository.save(account);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -62,10 +61,6 @@ public class AuthController {
         userAccountRepository
             .findByUsername(authentication.getName())
             .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
-    boolean admin =
-        authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .anyMatch("ROLE_ADMIN"::equals);
-    return new MeResponse(account.getId(), account.getUsername(), admin ? "ADMIN" : "USER");
+    return new MeResponse(account.getId(), account.getUsername(), account.getRole().name());
   }
 }

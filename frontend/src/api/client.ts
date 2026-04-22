@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'sc_basic_auth'
 
-export type StoredRole = 'USER' | 'ADMIN'
+export type StoredRole = 'ADMIN' | 'STUDENT' | 'TEACHER'
 
 export function getApiBase(): string {
   const v = import.meta.env.VITE_API_BASE_URL
@@ -44,6 +44,20 @@ export function clearStoredAuth(): void {
   sessionStorage.removeItem(STORAGE_KEY)
 }
 
+export function updateStoredRole(role: StoredRole): void {
+  const current = getStoredAuth()
+  if (!current) return
+  sessionStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      userId: current.userId,
+      username: current.username,
+      token: current.token,
+      role,
+    }),
+  )
+}
+
 export function authHeaderFromStored(): Record<string, string> {
   const s = getStoredAuth()
   if (!s?.token) return {}
@@ -51,10 +65,10 @@ export function authHeaderFromStored(): Record<string, string> {
 }
 
 function storedRoleOrUser(): StoredRole {
-  return getStoredAuth()?.role ?? 'USER'
+  return getStoredAuth()?.role ?? 'STUDENT'
 }
 
-/** Prefer session role from /api/v1/auth/me; falls back to USER if missing (legacy session). */
+/** Prefer session role from /api/v1/auth/me; falls back to STUDENT if missing (legacy session). */
 export function isAdminFromStored(): boolean {
   return storedRoleOrUser() === 'ADMIN'
 }
@@ -90,8 +104,7 @@ export async function apiFetch<T = unknown>(
   }
   if (res.status === 403) {
     const msg = await parseError(res)
-    const hint =
-      'Creating, editing, or deleting resources requires an administrator account.'
+    const hint = 'You do not have permission to access this action.'
     throw new Error(
       msg && msg !== 'Forbidden' && !msg.toLowerCase().includes('access denied')
         ? msg
@@ -131,7 +144,7 @@ export async function verifyCredentials(
     throw new Error(msg)
   }
   const me = (await res.json()) as MeResponse
-  const role: StoredRole = me.role === 'ADMIN' ? 'ADMIN' : 'USER'
+  const role: StoredRole = me.role
   setStoredAuth(me.id, normalizedUsername, password, role)
 }
 
@@ -157,4 +170,8 @@ export async function registerAccount(
     const msg = await parseError(res)
     throw new Error(msg)
   }
+}
+
+export async function getCurrentSessionUser(): Promise<MeResponse | null> {
+  return apiFetch<MeResponse>('/api/v1/auth/me')
 }

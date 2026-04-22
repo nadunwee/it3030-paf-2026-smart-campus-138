@@ -15,6 +15,7 @@ import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
+import com.it3030.paf.smartcampus.repository.NotificationRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -35,19 +36,21 @@ public class DashboardControllerTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private BookingRepository bookingRepository;
   @Autowired private FacilityResourceRepository facilityResourceRepository;
+  @Autowired private NotificationRepository notificationRepository;
   @Autowired private UserAccountRepository userAccountRepository;
 
   @BeforeEach
   void setUp() {
+    notificationRepository.deleteAll();
     bookingRepository.deleteAll();
     facilityResourceRepository.deleteAll();
     userAccountRepository.deleteAll();
   }
 
   @Test
-  @WithMockUser(username = "alice", roles = "USER")
+  @WithMockUser(username = "alice", roles = "STUDENT")
   void summary_userGetsFacilityCountAndMonth() throws Exception {
-    createUser("alice", AppRole.USER);
+    createUser("alice", AppRole.STUDENT);
     createFacility("Building A");
     createFacility("Building B");
 
@@ -63,7 +66,7 @@ public class DashboardControllerTest {
   @WithMockUser(username = "admin", roles = "ADMIN")
   void summary_adminGetsPendingApprovalCount() throws Exception {
     createUser("admin", AppRole.ADMIN);
-    UserAccount alice = createUser("alice", AppRole.USER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Auditorium");
 
     createBooking(facility, alice, BookingStatus.PENDING, "2026-09-01T09:00:00Z", "2026-09-01T10:00:00Z");

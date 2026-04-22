@@ -38,7 +38,7 @@ public class ResourceController {
   }
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<Page<ResourceResponse>> list(
       @RequestParam(required = false, name = "type") ResourceType type,
       @RequestParam(required = false, name = "capacityMin") Integer capacityMin,
@@ -78,7 +78,7 @@ public class ResourceController {
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<ResourceResponse> getById(@PathVariable("id") Long id, Authentication authentication) {
     boolean isAdmin = isAdmin(authentication);
     return ResponseEntity.ok(facilityResourceService.getById(id, isAdmin));

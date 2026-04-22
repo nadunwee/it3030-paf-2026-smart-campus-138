@@ -7,6 +7,9 @@ import com.it3030.paf.smartcampus.api.dto.ResourcePatchRequest;
 import com.it3030.paf.smartcampus.api.dto.ResourceResponse;
 import com.it3030.paf.smartcampus.domain.AvailabilityWindow;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
+import com.it3030.paf.smartcampus.domain.enums.AppRole;
+import com.it3030.paf.smartcampus.domain.enums.NotificationType;
+import com.it3030.paf.smartcampus.domain.enums.RelatedEntityType;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.exception.ResourceNotFoundException;
@@ -25,9 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacilityResourceService {
 
   private final FacilityResourceRepository facilityResourceRepository;
+  private final NotificationService notificationService;
 
-  public FacilityResourceService(FacilityResourceRepository facilityResourceRepository) {
+  public FacilityResourceService(
+      FacilityResourceRepository facilityResourceRepository,
+      NotificationService notificationService) {
     this.facilityResourceRepository = facilityResourceRepository;
+    this.notificationService = notificationService;
   }
 
   @Transactional(readOnly = true)
@@ -49,7 +56,7 @@ public class FacilityResourceService {
       throw new IllegalArgumentException("availableTo must be after availableFrom");
     }
 
-    // Enforce USER visibility: they should only see ACTIVE resources.
+    // Non-admin users should only see ACTIVE resources.
     ResourceStatus effectiveStatus = isAdmin ? status : ResourceStatus.ACTIVE;
 
     Specification<FacilityResource> spec =
@@ -100,6 +107,24 @@ public class FacilityResourceService {
     }
 
     FacilityResource saved = facilityResourceRepository.save(entity);
+    notificationService.notifyUsersByRole(
+        AppRole.STUDENT,
+        NotificationType.SYSTEM,
+        "New facility added",
+        "A new facility is available: " + saved.getType().name() + " at " + saved.getLocation() + ".",
+        RelatedEntityType.SYSTEM,
+        saved.getId(),
+        "/facilities/" + saved.getId(),
+        null);
+    notificationService.notifyUsersByRole(
+        AppRole.TEACHER,
+        NotificationType.SYSTEM,
+        "New facility added",
+        "A new facility is available: " + saved.getType().name() + " at " + saved.getLocation() + ".",
+        RelatedEntityType.SYSTEM,
+        saved.getId(),
+        "/facilities/" + saved.getId(),
+        null);
     return toResponse(saved);
   }
 
