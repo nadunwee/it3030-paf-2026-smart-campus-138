@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import FacilitiesCatalogue from './pages/FacilitiesCatalogue'
 import ResourceDetail from './pages/ResourceDetail'
 import ResourceForm from './pages/ResourceForm'
+import BookingManagement from './pages/BookingManagement'
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
   {
     path: '/facilities',
     element: <FacilitiesCatalogue />,
+  },
+  {
+    path: '/bookings',
+    element: <BookingManagement />,
   },
   {
     path: '/facilities/new',

@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
     return buildError(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
   }
 
+  @ExceptionHandler(BookingConflictException.class)
+  public ResponseEntity<ApiError> handleBookingConflict(
+      BookingConflictException ex, HttpServletRequest request) {
+    return buildError(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+  }
+
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
     return buildError(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
@@ -209,4 +215,3 @@ public class GlobalExceptionHandler {
     }
   }
 }
-

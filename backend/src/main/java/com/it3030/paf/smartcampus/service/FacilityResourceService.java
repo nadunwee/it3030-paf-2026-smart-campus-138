@@ -37,9 +37,18 @@ public class FacilityResourceService {
       String location,
       ResourceStatus status,
       OffsetDateTime availableOn,
+      OffsetDateTime availableFrom,
+      OffsetDateTime availableTo,
       Pageable pageable,
       boolean isAdmin
   ) {
+    if ((availableFrom == null) != (availableTo == null)) {
+      throw new IllegalArgumentException("availableFrom and availableTo must be provided together");
+    }
+    if (availableFrom != null && !availableTo.isAfter(availableFrom)) {
+      throw new IllegalArgumentException("availableTo must be after availableFrom");
+    }
+
     // Enforce USER visibility: they should only see ACTIVE resources.
     ResourceStatus effectiveStatus = isAdmin ? status : ResourceStatus.ACTIVE;
 
@@ -49,7 +58,8 @@ public class FacilityResourceService {
             .and(FacilityResourceSpecifications.locationContains(location))
             .and(FacilityResourceSpecifications.capacityAtLeast(capacityMin))
             .and(FacilityResourceSpecifications.statusEquals(effectiveStatus))
-            .and(FacilityResourceSpecifications.availableOn(availableOn));
+            .and(FacilityResourceSpecifications.availableOn(availableOn))
+            .and(FacilityResourceSpecifications.notBookedBetween(availableFrom, availableTo));
 
     return facilityResourceRepository.findAll(spec, pageable).map(this::toResponse);
   }
@@ -175,4 +185,3 @@ public class FacilityResourceService {
     return res;
   }
 }
-

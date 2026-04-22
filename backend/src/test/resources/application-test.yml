@@ -16,3 +16,5 @@ spring:
     init:
       mode: never
 
+  flyway:
+    enabled: false

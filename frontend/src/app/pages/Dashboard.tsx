@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Navbar } from '../components/Navbar'
 import {
@@ -18,13 +19,39 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { apiFetch } from '@/api/client'
+import type { DashboardSummaryResponse } from '@/api/dashboard'
 
 export default function Dashboard() {
   const { user, isAdmin } = useAuth()
+  const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null)
+  const [summaryError, setSummaryError] = useState<string | null>(null)
 
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    let cancelled = false
+    ;(async () => {
+      try {
+        const data = await apiFetch<DashboardSummaryResponse>('/api/v1/dashboard/summary')
+        if (!cancelled) {
+          setSummary(data)
+          setSummaryError(null)
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setSummaryError(e instanceof Error ? e.message : 'Failed to load dashboard summary')
+          setSummary(null)
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
   const modules = [
     {
@@ -40,8 +67,8 @@ export default function Dashboard() {
       title: 'Booking Management',
       description: 'Submit and track booking requests with approval workflows.',
       icon: Calendar,
-      status: 'coming-soon' as const,
-      link: '#',
+      status: 'available' as const,
+      link: '/bookings',
     },
     {
       id: 'C',
@@ -69,11 +96,32 @@ export default function Dashboard() {
     },
   ]
 
-  const stats = [
-    { label: 'Active facilities', value: '24', note: '+3 this month' },
-    { label: 'Your bookings', value: '5', note: '2 upcoming' },
-    { label: 'Open tickets', value: '2', note: '1 resolved today' },
-  ]
+  const stats = useMemo(
+    () => [
+      {
+        label: 'Active facilities',
+        value: summary ? String(summary.activeFacilitiesCount) : '--',
+        note: summary ? `Current month: ${summary.currentMonthLabel}` : 'Loading month...',
+      },
+      {
+        label: 'Your bookings',
+        value: '--',
+        note: 'Track requests in Booking Management',
+      },
+      {
+        label: 'Open tickets',
+        value: '--',
+        note: 'Maintenance module coming soon',
+      },
+    ],
+    [summary],
+  )
+
+  const liveModules = modules.filter((m) => m.status === 'available').length
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
 
   return (
     <div className="min-h-screen">
@@ -89,14 +137,19 @@ export default function Dashboard() {
               </p>
               <p className="max-w-2xl text-sm text-muted-foreground">
                 {isAdmin
-                  ? 'You can create, edit, and remove resources and review all statuses.'
-                  : 'You can browse resources and inspect their details. Management actions are restricted to admins.'}
+                  ? 'You can create, edit, and remove resources, review all statuses, and approve bookings.'
+                  : 'You can browse resources, submit booking requests, and track approvals.'}
               </p>
             </div>
             <Badge variant={isAdmin ? 'default' : 'secondary'} className="w-fit">
               {isAdmin ? 'Admin session' : 'User session'}
             </Badge>
           </div>
+          {summaryError && (
+            <p className="mt-3 text-sm text-destructive" role="alert">
+              {summaryError}
+            </p>
+          )}
         </section>
 
         <section className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -114,7 +167,9 @@ export default function Dashboard() {
         <section className="mt-8">
           <div className="mb-4 flex items-center justify-between">
             <h2>Platform Modules</h2>
-            <Badge variant="secondary">1 of 5 live</Badge>
+            <Badge variant="secondary">
+              {liveModules} of {modules.length} live
+            </Badge>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {modules.map((module) => {
@@ -137,7 +192,7 @@ export default function Dashboard() {
                       </Badge>
                     </div>
                     <CardTitle>
-                      Module {module.id}: {module.title}
+                      {module.title}
                     </CardTitle>
                     <CardDescription>{module.description}</CardDescription>
                   </CardHeader>

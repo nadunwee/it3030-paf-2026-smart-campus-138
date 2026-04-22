@@ -1,0 +1,48 @@
+Index: backend/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\n  port: 8080\n\nspring:\n  datasource:\n    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:smartcampus}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC\n    username: ${DB_USER:root}\n    password: ${DB_PASSWORD:password}\n    driver-class-name: com.mysql.cj.jdbc.Driver\n\n  jpa:\n    hibernate:\n      ddl-auto: update\n    properties:\n      hibernate:\n        dialect: org.hibernate.dialect.MySQL8Dialect\n        format_sql: true\n    open-in-view: false\n\n  jackson:\n    serialization:\n      write-dates-as-timestamps: false\n\nlogging:\n  level:\n    org.hibernate.SQL: INFO\n\n# Cross-origin browser access when the SPA origin differs from the API (e.g. VITE_API_BASE_URL set).\n# Prefer same-origin /api + Vite proxy in dev to avoid CORS entirely. Override via env, e.g.:\n# APP_CORS_ALLOWED_ORIGIN_PATTERNS_0=http://localhost:*\n# APP_CORS_ALLOWED_ORIGIN_PATTERNS_1=http://192.168.1.10:*\napp:\n  security:\n    # Bootstrap admin when no ADMIN exists (override via ADMIN_USERNAME / ADMIN_PASSWORD in production).\n    bootstrap-admin-username: ${ADMIN_USERNAME:admin}\n    bootstrap-admin-password: ${ADMIN_PASSWORD:admin123}\n  cors:\n    allowed-origin-patterns:\n      - http://localhost:*\n      - http://127.0.0.1:*\n      - http://[::1]:*\n      - \"*\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/resources/application.yml b/backend/src/main/resources/application.yml
+--- a/backend/src/main/resources/application.yml	(revision 84013c177e16779784ec51c0130c5984a7da9efe)
++++ b/backend/src/main/resources/application.yml	(date 1776512340208)
+@@ -5,7 +5,7 @@
+   datasource:
+     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:smartcampus}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+     username: ${DB_USER:root}
+-    password: ${DB_PASSWORD:password}
++    password: ${DB_PASSWORD:}
+     driver-class-name: com.mysql.cj.jdbc.Driver
+ 
+   jpa:
+Index: backend/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n  <modelVersion>4.0.0</modelVersion>\n\n  <groupId>com.it3030.paf</groupId>\n  <artifactId>smart-campus-backend</artifactId>\n  <version>0.1.0-SNAPSHOT</version>\n  <name>smart-campus-backend</name>\n\n  <properties>\n    <java.version>17</java.version>\n    <spring-boot.version>3.3.2</spring-boot.version>\n  </properties>\n\n  <dependencyManagement>\n    <dependencies>\n      <dependency>\n        <groupId>org.springframework.boot</groupId>\n        <artifactId>spring-boot-dependencies</artifactId>\n        <version>${spring-boot.version}</version>\n        <type>pom</type>\n        <scope>import</scope>\n      </dependency>\n    </dependencies>\n  </dependencyManagement>\n\n  <dependencies>\n    <!-- REST API -->\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-web</artifactId>\n    </dependency>\n\n    <!-- Persistence -->\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-data-jpa</artifactId>\n    </dependency>\n\n    <!-- Validation -->\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-validation</artifactId>\n    </dependency>\n\n    <!-- Security (basic auth skeleton for local testing) -->\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-security</artifactId>\n    </dependency>\n\n    <!-- MySQL driver -->\n    <dependency>\n      <groupId>com.mysql</groupId>\n      <artifactId>mysql-connector-j</artifactId>\n      <scope>runtime</scope>\n    </dependency>\n\n    <!-- Testing -->\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.security</groupId>\n      <artifactId>spring-security-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n    <!-- H2: used only for tests -->\n    <dependency>\n      <groupId>com.h2database</groupId>\n      <artifactId>h2</artifactId>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n\n  <build>\n    <plugins>\n      <plugin>\n        <groupId>org.springframework.boot</groupId>\n        <artifactId>spring-boot-maven-plugin</artifactId>\n        <version>${spring-boot.version}</version>\n      </plugin>\n\n      <plugin>\n        <groupId>org.apache.maven.plugins</groupId>\n        <artifactId>maven-compiler-plugin</artifactId>\n        <version>3.15.0</version>\n        <configuration>\n          <release>${java.version}</release>\n          <compilerArgs>\n            <arg>-parameters</arg>\n          </compilerArgs>\n        </configuration>\n      </plugin>\n    </plugins>\n  </build>\n</project>\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/pom.xml b/backend/pom.xml
+--- a/backend/pom.xml	(revision 84013c177e16779784ec51c0130c5984a7da9efe)
++++ b/backend/pom.xml	(date 1776500217412)
+@@ -64,17 +64,12 @@
+       <artifactId>spring-boot-starter-test</artifactId>
+       <scope>test</scope>
+     </dependency>
++
+     <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-test</artifactId>
+       <scope>test</scope>
+     </dependency>
+-    <!-- H2: used only for tests -->
+-    <dependency>
+-      <groupId>com.h2database</groupId>
+-      <artifactId>h2</artifactId>
+-      <scope>test</scope>
+-    </dependency>
+   </dependencies>
+ 
+   <build>

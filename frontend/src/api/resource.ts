@@ -61,6 +61,8 @@ export function buildListQuery(params: {
   location?: string
   status?: string
   availableOn?: string
+  availableFrom?: string
+  availableTo?: string
 }): string {
   const u = new URLSearchParams()
   u.set('page', String(params.page))
@@ -73,6 +75,8 @@ export function buildListQuery(params: {
   if (loc) u.set('location', loc)
   if (params.status && params.status !== 'ALL') u.set('status', params.status)
   if (params.availableOn) u.set('availableOn', params.availableOn)
+  if (params.availableFrom) u.set('availableFrom', params.availableFrom)
+  if (params.availableTo) u.set('availableTo', params.availableTo)
   return u.toString()
 }
 

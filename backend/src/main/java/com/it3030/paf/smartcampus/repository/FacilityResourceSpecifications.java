@@ -1,14 +1,16 @@
 package com.it3030.paf.smartcampus.repository;
 
 import com.it3030.paf.smartcampus.domain.AvailabilityWindow;
+import com.it3030.paf.smartcampus.domain.Booking;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
+import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import java.time.OffsetDateTime;
-import org.springframework.data.jpa.domain.Specification;
-
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Subquery;
+import org.springframework.data.jpa.domain.Specification;
 
 public final class FacilityResourceSpecifications {
 
@@ -62,5 +64,25 @@ public final class FacilityResourceSpecifications {
       );
     };
   }
-}
 
+  public static Specification<FacilityResource> notBookedBetween(OffsetDateTime from, OffsetDateTime to) {
+    if (from == null || to == null) {
+      return null;
+    }
+
+    return (root, query, cb) -> {
+      Subquery<Long> subquery = query.subquery(Long.class);
+      var bookingRoot = subquery.from(Booking.class);
+
+      subquery
+          .select(bookingRoot.get("bookingId"))
+          .where(
+              cb.equal(bookingRoot.get("facilityResource"), root),
+              cb.equal(bookingRoot.get("status"), BookingStatus.APPROVED),
+              cb.lessThan(bookingRoot.get("bookedFrom"), to),
+              cb.greaterThan(bookingRoot.get("bookedTo"), from));
+
+      return cb.not(cb.exists(subquery));
+    };
+  }
+}

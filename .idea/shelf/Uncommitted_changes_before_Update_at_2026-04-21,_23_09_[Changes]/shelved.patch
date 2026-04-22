@@ -1,0 +1,40 @@
+Index: frontend/vite.config.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\n\n// https://vite.dev/config/\nexport default defineConfig({\n  plugins: [react()],\n})\n
+===================================================================
+diff --git a/frontend/vite.config.js b/frontend/vite.config.js
+--- a/frontend/vite.config.js	(revision 84013c177e16779784ec51c0130c5984a7da9efe)
++++ b/frontend/vite.config.js	(date 1776512556686)
+@@ -1,7 +1,30 @@
+ import { defineConfig } from 'vite'
+ import react from '@vitejs/plugin-react'
++import path from 'node:path'
++import tailwindcss from '@tailwindcss/vite'
+ 
+ // https://vite.dev/config/
+ export default defineConfig({
+-  plugins: [react()],
++  plugins: [react(), tailwindcss()],
++  resolve: {
++    alias: {
++      '@': path.resolve(__dirname, 'src'),
++    },
++  },
++  server: {
++    proxy: {
++      '/api': {
++        target: 'http://localhost:8080',
++        changeOrigin: true,
++        configure(proxy) {
++          proxy.on('proxyReq', (proxyReq, req) => {
++            const auth = req.headers.authorization
++            if (auth) {
++              proxyReq.setHeader('Authorization', auth)
++            }
++          })
++        },
++      },
++    },
++  },
+ })

@@ -12,7 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +43,21 @@ public class FacilityResource {
   @Column(name = "deleted", nullable = false)
   private boolean deleted = false;
 
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private OffsetDateTime createdAt;
+
   @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<AvailabilityWindow> availabilityWindows = new ArrayList<>();
+
+  @OneToMany(mappedBy = "facilityResource", fetch = FetchType.LAZY)
+  private List<Booking> bookings = new ArrayList<>();
+
+  @PrePersist
+  void onCreate() {
+    if (createdAt == null) {
+      createdAt = OffsetDateTime.now();
+    }
+  }
 
   public Long getId() {
     return id;
@@ -95,5 +110,20 @@ public class FacilityResource {
   public void setAvailabilityWindows(List<AvailabilityWindow> availabilityWindows) {
     this.availabilityWindows = availabilityWindows;
   }
-}
 
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public List<Booking> getBookings() {
+    return bookings;
+  }
+
+  public void setBookings(List<Booking> bookings) {
+    this.bookings = bookings;
+  }
+}

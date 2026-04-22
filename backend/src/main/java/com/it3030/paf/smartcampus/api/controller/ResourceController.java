@@ -46,6 +46,10 @@ public class ResourceController {
       @RequestParam(required = false, name = "status") ResourceStatus status,
       @RequestParam(required = false, name = "availableOn")
           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime availableOn,
+      @RequestParam(required = false, name = "availableFrom")
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime availableFrom,
+      @RequestParam(required = false, name = "availableTo")
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime availableTo,
       @RequestParam(defaultValue = "0", name = "page") int page,
       @RequestParam(defaultValue = "20", name = "size") int size,
       Authentication authentication
@@ -60,7 +64,16 @@ public class ResourceController {
     boolean isAdmin = isAdmin(authentication);
     PageRequest pageable = PageRequest.of(page, size);
     Page<ResourceResponse> result =
-        facilityResourceService.searchResources(type, capacityMin, location, status, availableOn, pageable, isAdmin);
+        facilityResourceService.searchResources(
+            type,
+            capacityMin,
+            location,
+            status,
+            availableOn,
+            availableFrom,
+            availableTo,
+            pageable,
+            isAdmin);
     return ResponseEntity.ok(result);
   }
 
@@ -104,4 +117,3 @@ public class ResourceController {
     return authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
   }
 }
-

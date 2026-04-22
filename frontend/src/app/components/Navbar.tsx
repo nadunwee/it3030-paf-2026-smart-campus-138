@@ -1,12 +1,47 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { Building2, LogOut, Plus } from 'lucide-react'
+import { Building2, CalendarClock, LogOut, Plus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { apiFetch } from '@/api/client'
+import type { PendingCountResponse } from '@/api/booking'
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
+  const [pendingApprovals, setPendingApprovals] = useState(0)
+
+  useEffect(() => {
+    if (!isAdmin || !user) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadPendingCount = async () => {
+      try {
+        const res = await apiFetch<PendingCountResponse>('/api/v1/bookings/pending/count')
+        if (!cancelled) {
+          setPendingApprovals(res?.pendingCount ?? 0)
+        }
+      } catch {
+        if (!cancelled) {
+          setPendingApprovals(0)
+        }
+      }
+    }
+
+    void loadPendingCount()
+    const timer = window.setInterval(() => {
+      void loadPendingCount()
+    }, 30000)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [isAdmin, user])
 
   const handleLogout = () => {
     logout()
@@ -44,6 +79,17 @@ export function Navbar() {
                   Facilities
                 </Button>
               </Link>
+              <Link to="/bookings">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <CalendarClock className="h-4 w-4" />
+                  Bookings
+                  {isAdmin && pendingApprovals > 0 && (
+                    <Badge variant="secondary" className="ml-1 text-[10px]">
+                      {pendingApprovals}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
               {isAdmin && (
                 <Link to="/facilities/new">
                   <Button variant="ghost" size="sm" className="gap-2">
@@ -66,6 +112,11 @@ export function Navbar() {
                   >
                     {user.role}
                   </Badge>
+                  {isAdmin && pendingApprovals > 0 && (
+                    <Badge variant="secondary" className="text-[11px] uppercase tracking-wide">
+                      {pendingApprovals} pending
+                    </Badge>
+                  )}
                 </div>
                 <Button
                   variant="outline"
@@ -95,6 +146,16 @@ export function Navbar() {
           <Link to="/facilities">
             <Button variant="ghost" size="sm">
               Facilities
+            </Button>
+          </Link>
+          <Link to="/bookings">
+            <Button variant="ghost" size="sm" className="gap-1">
+              Bookings
+              {isAdmin && pendingApprovals > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {pendingApprovals}
+                </Badge>
+              )}
             </Button>
           </Link>
           {isAdmin && (
