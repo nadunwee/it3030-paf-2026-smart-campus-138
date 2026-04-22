@@ -75,8 +75,8 @@ export default function Dashboard() {
       title: 'Maintenance & Tickets',
       description: 'Report issues and monitor progress for maintenance tasks.',
       icon: Wrench,
-      status: 'coming-soon' as const,
-      link: '#',
+      status: 'available' as const,
+      link: '/tickets',
     },
     {
       id: 'D',
@@ -111,7 +111,7 @@ export default function Dashboard() {
       {
         label: 'Open tickets',
         value: '--',
-        note: 'Maintenance module coming soon',
+        note: 'Track in Maintenance & Tickets',
       },
     ],
     [summary],

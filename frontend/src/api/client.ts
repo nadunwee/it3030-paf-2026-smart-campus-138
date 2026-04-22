@@ -8,6 +8,7 @@ export function getApiBase(): string {
 }
 
 export function getStoredAuth(): {
+  userId?: number
   username: string
   token: string
   role?: StoredRole
@@ -16,6 +17,7 @@ export function getStoredAuth(): {
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     return JSON.parse(raw) as {
+      userId?: number
       username: string
       token: string
       role?: StoredRole
@@ -26,6 +28,7 @@ export function getStoredAuth(): {
 }
 
 export function setStoredAuth(
+  userId: number | undefined,
   username: string,
   password: string,
   role: StoredRole,
@@ -33,7 +36,7 @@ export function setStoredAuth(
   const token = btoa(`${username}:${password}`)
   sessionStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify({ username, token, role }),
+    JSON.stringify({ userId, username, token, role }),
   )
 }
 
@@ -107,7 +110,7 @@ export async function apiFetch<T = unknown>(
   return res.text() as unknown as T
 }
 
-export type MeResponse = { username: string; role: StoredRole }
+export type MeResponse = { id: number; username: string; role: StoredRole }
 
 export async function verifyCredentials(
   username: string,
@@ -129,7 +132,7 @@ export async function verifyCredentials(
   }
   const me = (await res.json()) as MeResponse
   const role: StoredRole = me.role === 'ADMIN' ? 'ADMIN' : 'USER'
-  setStoredAuth(normalizedUsername, password, role)
+  setStoredAuth(me.id, normalizedUsername, password, role)
 }
 
 export async function registerAccount(

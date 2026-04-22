@@ -58,10 +58,14 @@ public class AuthController {
 
   @GetMapping("/me")
   public MeResponse me(Authentication authentication) {
+    UserAccount account =
+        userAccountRepository
+            .findByUsername(authentication.getName())
+            .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
     boolean admin =
         authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .anyMatch("ROLE_ADMIN"::equals);
-    return new MeResponse(authentication.getName(), admin ? "ADMIN" : "USER");
+    return new MeResponse(account.getId(), account.getUsername(), admin ? "ADMIN" : "USER");
   }
 }

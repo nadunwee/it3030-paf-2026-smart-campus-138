@@ -16,6 +16,7 @@ import {
 export type UserRole = 'USER' | 'ADMIN'
 
 interface User {
+  id?: number
   username: string
   role: UserRole
 }
@@ -34,6 +35,7 @@ function userFromStorage(): User | null {
   if (!s?.username) return null
   const role: UserRole = s.role === 'ADMIN' ? 'ADMIN' : 'USER'
   return {
+    id: s.userId,
     username: s.username,
     role,
   }
@@ -48,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const s = getStoredAuth()
     const role: StoredRole = s?.role === 'ADMIN' ? 'ADMIN' : 'USER'
     setUser({
+      id: s?.userId,
       username: normalizedUsername,
       role,
     })

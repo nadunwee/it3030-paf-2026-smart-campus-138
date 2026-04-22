@@ -38,14 +38,14 @@ export default function Home() {
       title: 'Booking Workflow',
       description:
         'Track requests, approvals, and schedule decisions in one transparent timeline.',
-      status: 'Planned',
+      status: 'Live',
       icon: Calendar,
     },
     {
       title: 'Maintenance Tracking',
       description:
         'Record issue details, monitor progress, and improve facility service turnaround.',
-      status: 'Planned',
+      status: 'Live',
       icon: Wrench,
     },
     {
@@ -174,7 +174,7 @@ export default function Home() {
         <section className="mx-auto mt-10 max-w-6xl">
           <div className="mb-4 flex items-center justify-between">
             <h2>Platform Modules</h2>
-            <Badge variant="secondary">2 live, 2 planned</Badge>
+            <Badge variant="secondary">4 live</Badge>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {modules.map((module, idx) => (

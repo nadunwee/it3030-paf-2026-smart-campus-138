@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { Building2, CalendarClock, LogOut, Plus } from 'lucide-react'
+import { Building2, CalendarClock, ClipboardList, LogOut, Plus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { apiFetch } from '@/api/client'
 import type { PendingCountResponse } from '@/api/booking'
+import type { TicketOpenCountResponse } from '@/api/ticket'
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [pendingApprovals, setPendingApprovals] = useState(0)
+  const [openTickets, setOpenTickets] = useState(0)
 
   useEffect(() => {
     if (!isAdmin || !user) {
@@ -21,13 +23,18 @@ export function Navbar() {
 
     const loadPendingCount = async () => {
       try {
-        const res = await apiFetch<PendingCountResponse>('/api/v1/bookings/pending/count')
+        const [bookingRes, ticketRes] = await Promise.all([
+          apiFetch<PendingCountResponse>('/api/v1/bookings/pending/count'),
+          apiFetch<TicketOpenCountResponse>('/api/v1/tickets/open/count'),
+        ])
         if (!cancelled) {
-          setPendingApprovals(res?.pendingCount ?? 0)
+          setPendingApprovals(bookingRes?.pendingCount ?? 0)
+          setOpenTickets(ticketRes?.openCount ?? 0)
         }
       } catch {
         if (!cancelled) {
           setPendingApprovals(0)
+          setOpenTickets(0)
         }
       }
     }
@@ -90,6 +97,17 @@ export function Navbar() {
                   )}
                 </Button>
               </Link>
+              <Link to="/tickets">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <ClipboardList className="h-4 w-4" />
+                  Tickets
+                  {isAdmin && openTickets > 0 && (
+                    <Badge variant="secondary" className="ml-1 text-[10px]">
+                      {openTickets}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
               {isAdmin && (
                 <Link to="/facilities/new">
                   <Button variant="ghost" size="sm" className="gap-2">
@@ -115,6 +133,11 @@ export function Navbar() {
                   {isAdmin && pendingApprovals > 0 && (
                     <Badge variant="secondary" className="text-[11px] uppercase tracking-wide">
                       {pendingApprovals} pending
+                    </Badge>
+                  )}
+                  {isAdmin && openTickets > 0 && (
+                    <Badge variant="secondary" className="text-[11px] uppercase tracking-wide">
+                      {openTickets} open tickets
                     </Badge>
                   )}
                 </div>
@@ -154,6 +177,16 @@ export function Navbar() {
               {isAdmin && pendingApprovals > 0 && (
                 <Badge variant="secondary" className="text-[10px]">
                   {pendingApprovals}
+                </Badge>
+              )}
+            </Button>
+          </Link>
+          <Link to="/tickets">
+            <Button variant="ghost" size="sm" className="gap-1">
+              Tickets
+              {isAdmin && openTickets > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {openTickets}
                 </Badge>
               )}
             </Button>

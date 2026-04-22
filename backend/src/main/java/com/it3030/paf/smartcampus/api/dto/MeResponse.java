@@ -2,15 +2,25 @@ package com.it3030.paf.smartcampus.api.dto;
 
 public class MeResponse {
 
+  private Long id;
   private String username;
   /** "USER" or "ADMIN" */
   private String role;
 
   public MeResponse() {}
 
-  public MeResponse(String username, String role) {
+  public MeResponse(Long id, String username, String role) {
+    this.id = id;
     this.username = username;
     this.role = role;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getUsername() {
