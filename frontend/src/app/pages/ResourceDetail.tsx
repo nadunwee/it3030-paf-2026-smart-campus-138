@@ -223,24 +223,32 @@ export default function ResourceDetail() {
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {facility.availabilityWindows.map((window, idx) => (
-                    <div
-                      key={`${window.startDateTime}-${window.endDateTime}-${idx}`}
-                      className="rounded-lg border border-border/80 bg-muted/30 p-3"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
-                        <div className="flex-1">
-                          <p className="font-medium">
-                            {format(new Date(window.startDateTime), 'EEE, MMM d, yyyy')}
-                          </p>
-                        </div>
-                        <div className="text-muted-foreground">
-                          {format(new Date(window.startDateTime), 'h:mm a')} -{' '}
-                          {format(new Date(window.endDateTime), 'h:mm a')}
+                  {facility.availabilityWindows.map((window, idx) => {
+                    const startDate = new Date(window.startDateTime)
+                    const endDate = new Date(window.endDateTime)
+                    const sameDay = format(startDate, 'yyyy-MM-dd') === format(endDate, 'yyyy-MM-dd')
+                    
+                    return (
+                      <div
+                        key={`${window.startDateTime}-${window.endDateTime}-${idx}`}
+                        className="rounded-lg border border-border/80 bg-muted/30 p-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
+                          <div className="flex-1">
+                            <p className="font-medium">
+                              {sameDay 
+                                ? format(startDate, 'EEE, MMM d, yyyy')
+                                : `${format(startDate, 'EEE, MMM d, yyyy')} - ${format(endDate, 'EEE, MMM d, yyyy')}`
+                              }
+                            </p>
+                          </div>
+                          <div className="text-muted-foreground">
+                            {format(startDate, 'h:mm a')} - {format(endDate, 'h:mm a')}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </CardContent>
