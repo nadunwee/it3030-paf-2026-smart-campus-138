@@ -79,14 +79,18 @@ export default function Dashboard() {
       status: (isAdmin || isStudent ? 'available' : 'coming-soon') as ModuleStatus,
       link: '/tickets',
     },
-    {
-      id: 'D',
-      title: 'Access Control',
-      description: 'Centralize authentication and role governance across modules.',
-      icon: Shield,
-      status: (isAdmin ? 'available' : 'coming-soon') as ModuleStatus,
-      link: '/admin/users',
-    },
+    ...(isAdmin
+      ? [
+          {
+            id: 'D',
+            title: 'Access Control',
+            description: 'Centralize authentication and role governance across modules.',
+            icon: Shield,
+            status: 'available' as ModuleStatus,
+            link: '/admin/users',
+          },
+        ]
+      : []),
   ]
 
   const stats = useMemo(
@@ -98,13 +102,13 @@ export default function Dashboard() {
       },
       {
         label: 'Your bookings',
-        value: '--',
-        note: 'Track requests in Booking Management',
+        value: summary ? String(summary.myBookingsCount) : '--',
+        note: 'Total bookings you have submitted',
       },
       {
         label: 'Open tickets',
-        value: '--',
-        note: 'Track in Maintenance & Tickets',
+        value: summary ? String(summary.openTicketsCount) : '--',
+        note: 'Total tickets linked to your account',
       },
     ],
     [summary],

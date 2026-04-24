@@ -26,6 +26,6 @@ public class DashboardController {
         authentication != null
             && authentication.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-    return ResponseEntity.ok(dashboardService.getSummary(isAdmin));
+    return ResponseEntity.ok(dashboardService.getSummary(authentication.getName(), isAdmin));
   }
 }

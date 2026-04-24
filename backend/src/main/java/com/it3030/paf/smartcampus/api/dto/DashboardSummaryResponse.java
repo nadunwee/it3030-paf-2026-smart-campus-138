@@ -4,13 +4,22 @@ public class DashboardSummaryResponse {
   private long activeFacilitiesCount;
   private String currentMonthLabel;
   private Long pendingApprovals;
+  private long myBookingsCount;
+  private long openTicketsCount;
 
   public DashboardSummaryResponse() {}
 
-  public DashboardSummaryResponse(long activeFacilitiesCount, String currentMonthLabel, Long pendingApprovals) {
+  public DashboardSummaryResponse(
+      long activeFacilitiesCount,
+      String currentMonthLabel,
+      Long pendingApprovals,
+      long myBookingsCount,
+      long openTicketsCount) {
     this.activeFacilitiesCount = activeFacilitiesCount;
     this.currentMonthLabel = currentMonthLabel;
     this.pendingApprovals = pendingApprovals;
+    this.myBookingsCount = myBookingsCount;
+    this.openTicketsCount = openTicketsCount;
   }
 
   public long getActiveFacilitiesCount() {
@@ -35,5 +44,21 @@ public class DashboardSummaryResponse {
 
   public void setPendingApprovals(Long pendingApprovals) {
     this.pendingApprovals = pendingApprovals;
+  }
+
+  public long getMyBookingsCount() {
+    return myBookingsCount;
+  }
+
+  public void setMyBookingsCount(long myBookingsCount) {
+    this.myBookingsCount = myBookingsCount;
+  }
+
+  public long getOpenTicketsCount() {
+    return openTicketsCount;
+  }
+
+  public void setOpenTicketsCount(long openTicketsCount) {
+    this.openTicketsCount = openTicketsCount;
   }
 }

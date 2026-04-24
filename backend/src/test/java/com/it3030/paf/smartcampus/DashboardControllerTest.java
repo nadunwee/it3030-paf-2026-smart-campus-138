@@ -8,14 +8,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.it3030.paf.smartcampus.domain.Booking;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
+import com.it3030.paf.smartcampus.domain.Ticketing;
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
+import com.it3030.paf.smartcampus.domain.enums.TicketCategory;
+import com.it3030.paf.smartcampus.domain.enums.TicketPriority;
+import com.it3030.paf.smartcampus.domain.enums.TicketStatus;
 import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
 import com.it3030.paf.smartcampus.repository.NotificationRepository;
+import com.it3030.paf.smartcampus.repository.TicketMessageRepository;
+import com.it3030.paf.smartcampus.repository.TicketingRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -37,11 +43,15 @@ public class DashboardControllerTest {
   @Autowired private BookingRepository bookingRepository;
   @Autowired private FacilityResourceRepository facilityResourceRepository;
   @Autowired private NotificationRepository notificationRepository;
+  @Autowired private TicketMessageRepository ticketMessageRepository;
+  @Autowired private TicketingRepository ticketingRepository;
   @Autowired private UserAccountRepository userAccountRepository;
 
   @BeforeEach
   void setUp() {
     notificationRepository.deleteAll();
+    ticketMessageRepository.deleteAll();
+    ticketingRepository.deleteAll();
     bookingRepository.deleteAll();
     facilityResourceRepository.deleteAll();
     userAccountRepository.deleteAll();
@@ -50,33 +60,46 @@ public class DashboardControllerTest {
   @Test
   @WithMockUser(username = "alice", roles = "STUDENT")
   void summary_userGetsFacilityCountAndMonth() throws Exception {
-    createUser("alice", AppRole.STUDENT);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
     createFacility("Building A");
     createFacility("Building B");
+    FacilityResource facility = createFacility("Building C");
+
+    createBooking(facility, alice, BookingStatus.PENDING, "2026-09-03T09:00:00Z", "2026-09-03T10:00:00Z");
+    createTicket(alice, TicketStatus.OPEN);
+    createTicket(alice, TicketStatus.CLOSED);
 
     mockMvc
         .perform(get("/api/v1/dashboard/summary"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.activeFacilitiesCount", is(2)))
+        .andExpect(jsonPath("$.activeFacilitiesCount", is(3)))
         .andExpect(jsonPath("$.currentMonthLabel").isNotEmpty())
-        .andExpect(jsonPath("$.pendingApprovals").isEmpty());
+        .andExpect(jsonPath("$.pendingApprovals").isEmpty())
+        .andExpect(jsonPath("$.myBookingsCount", is(1)))
+        .andExpect(jsonPath("$.openTicketsCount", is(2)));
   }
 
   @Test
   @WithMockUser(username = "admin", roles = "ADMIN")
   void summary_adminGetsPendingApprovalCount() throws Exception {
-    createUser("admin", AppRole.ADMIN);
+    UserAccount admin = createUser("admin", AppRole.ADMIN);
     UserAccount alice = createUser("alice", AppRole.STUDENT);
     FacilityResource facility = createFacility("Auditorium");
 
     createBooking(facility, alice, BookingStatus.PENDING, "2026-09-01T09:00:00Z", "2026-09-01T10:00:00Z");
     createBooking(facility, alice, BookingStatus.PENDING, "2026-09-02T09:00:00Z", "2026-09-02T10:00:00Z");
+    createBooking(facility, admin, BookingStatus.PENDING, "2026-09-03T09:00:00Z", "2026-09-03T10:00:00Z");
+    createTicket(alice, TicketStatus.OPEN);
+    createTicket(alice, TicketStatus.IN_PROGRESS);
+    createTicket(alice, TicketStatus.CLOSED);
 
     mockMvc
         .perform(get("/api/v1/dashboard/summary"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.activeFacilitiesCount", greaterThan(0)))
-        .andExpect(jsonPath("$.pendingApprovals", is(2)));
+        .andExpect(jsonPath("$.pendingApprovals", is(3)))
+        .andExpect(jsonPath("$.myBookingsCount", is(1)))
+        .andExpect(jsonPath("$.openTicketsCount", is(0)));
   }
 
   private UserAccount createUser(String username, AppRole role) {
@@ -118,5 +141,19 @@ public class DashboardControllerTest {
     booking.setStatus(status);
     booking.setApprovedAt(status == BookingStatus.APPROVED ? OffsetDateTime.now() : null);
     return bookingRepository.save(booking);
+  }
+
+  private Ticketing createTicket(UserAccount student, TicketStatus status) {
+    Ticketing ticket = new Ticketing();
+    ticket.setStudent(student);
+    ticket.setStudentName(student.getUsername());
+    ticket.setCategory(TicketCategory.TECHNICAL);
+    ticket.setSubject("Dashboard test ticket");
+    ticket.setDescription("Ticket generated for dashboard count test");
+    ticket.setStatus(status);
+    ticket.setPriority(TicketPriority.MEDIUM);
+    ticket.setAssignedAdmin(null);
+    ticket.setClosedAt(status == TicketStatus.CLOSED ? OffsetDateTime.now() : null);
+    return ticketingRepository.save(ticket);
   }
 }

@@ -15,6 +15,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
 
   Page<Booking> findByBookedByUserOrderByCreatedAtDesc(UserAccount bookedByUser, Pageable pageable);
 
+  long countByBookedByUserId(Long userId);
+
+  long deleteByBookedByUserId(Long userId);
+
   long countByStatus(BookingStatus status);
 
   boolean existsByFacilityResourceIdAndStatusAndBookedFromLessThanAndBookedToGreaterThan(
