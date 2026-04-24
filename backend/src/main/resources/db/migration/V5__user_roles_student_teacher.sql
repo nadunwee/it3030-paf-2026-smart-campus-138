@@ -1,6 +1,6 @@
 ALTER TABLE user_accounts
-  ADD COLUMN IF NOT EXISTS created_at DATETIME(6) NULL,
-  ADD COLUMN IF NOT EXISTS updated_at DATETIME(6) NULL;
+  ADD COLUMN created_at DATETIME(6) NULL,
+  ADD COLUMN updated_at DATETIME(6) NULL;
 
 UPDATE user_accounts
 SET created_at = COALESCE(created_at, CURRENT_TIMESTAMP(6)),
