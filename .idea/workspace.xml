@@ -7,16 +7,13 @@
     <list default="true" id="c1f2c02f-f648-4e56-bd0e-d156ce63b524" name="Changes" comment="small errors fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AdminBootstrapRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AdminBootstrapRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AppSecurityProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AppSecurityProperties.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/GoogleAuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/GoogleAuthService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/client.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/Login.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" afterDir="false" />
     </list>
@@ -52,35 +49,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.SmartCampusBackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/nadunweerakkody/Desktop/it3030-paf-2026-smart-campus-138&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/nadunweerakkody/Desktop/it3030-paf-2026-smart-campus-138/frontend/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.SmartCampusBackendApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "google-authenticaiton",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/nadunweerakkody/Desktop/it3030-paf-2026-smart-campus-138",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/Users/nadunweerakkody/Desktop/it3030-paf-2026-smart-campus-138/frontend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="SmartCampusBackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="smart-campus-backend" />

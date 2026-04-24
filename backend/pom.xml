@@ -51,6 +51,13 @@
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
+    <!-- Firebase Admin SDK for verifying Firebase Authentication ID tokens -->
+    <dependency>
+      <groupId>com.google.firebase</groupId>
+      <artifactId>firebase-admin</artifactId>
+      <version>9.7.0</version>
+    </dependency>
+
     <!-- MySQL driver -->
     <dependency>
       <groupId>com.mysql</groupId>

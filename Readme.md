@@ -35,23 +35,31 @@ YAML equivalent: `app.security.bootstrap-admin-username` and `app.security.boots
 
 The bootstrap username is **reserved** for self-service registration: users cannot register an account with that name.
 
-### Google login (optional)
+### Firebase Google login (optional)
 
-Set these when enabling Google sign-in:
+Set these when enabling Firebase Google sign-in:
 
 | Variable | Purpose |
 |----------|---------|
-| `GOOGLE_LOGIN_ENABLED` | Set `true` to enable Google login endpoint |
-| `GOOGLE_CLIENT_ID` | Google OAuth Web Client ID |
+| `GOOGLE_LOGIN_ENABLED` | Set `true` to enable the backend Google login endpoint |
+| `FIREBASE_PROJECT_ID` | Firebase project ID used to verify Firebase Auth ID tokens |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | Optional local path to a Firebase service account JSON file. If unset, Application Default Credentials are used |
 
-Frontend env (`frontend/.env`) also needs:
+Frontend env (`frontend/.env`) also needs the Firebase web app config:
 
-- `VITE_GOOGLE_CLIENT_ID=<same Google client id>`
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+In Firebase Console, enable **Authentication > Sign-in method > Google** and add your local dev origin, such as `localhost`, under **Authentication > Settings > Authorized domains**.
 
 ### API
 
 - `POST /api/v1/auth/register` — public; creates a **STUDENT** account (password min 8 characters).
-- `POST /api/v1/auth/google` — public; exchanges Google ID token for an app session token.
+- `POST /api/v1/auth/google` — public; exchanges a Firebase Authentication ID token for an app session token.
 - `GET /api/v1/auth/me` — authenticated; returns `{ "username", "role": "STUDENT" \| "TEACHER" \| "ADMIN" }`.
 - Facility resources under `/api/v1/resources` (see controllers).
 

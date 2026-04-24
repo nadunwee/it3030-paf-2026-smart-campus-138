@@ -14,8 +14,11 @@ public class AppSecurityProperties {
   /** Enables Google login endpoint/token exchange. */
   private boolean googleEnabled = false;
 
-  /** OAuth Client ID from Google Cloud console (Web application). */
-  private String googleClientId = "";
+  /** Firebase project ID used to verify Firebase Authentication ID tokens. */
+  private String firebaseProjectId = "";
+
+  /** Optional service account JSON path. If blank, Application Default Credentials are used. */
+  private String firebaseServiceAccountPath = "";
 
   public String getBootstrapAdminUsername() {
     return bootstrapAdminUsername;
@@ -41,11 +44,19 @@ public class AppSecurityProperties {
     this.googleEnabled = googleEnabled;
   }
 
-  public String getGoogleClientId() {
-    return googleClientId;
+  public String getFirebaseProjectId() {
+    return firebaseProjectId;
   }
 
-  public void setGoogleClientId(String googleClientId) {
-    this.googleClientId = googleClientId;
+  public void setFirebaseProjectId(String firebaseProjectId) {
+    this.firebaseProjectId = firebaseProjectId;
+  }
+
+  public String getFirebaseServiceAccountPath() {
+    return firebaseServiceAccountPath;
+  }
+
+  public void setFirebaseServiceAccountPath(String firebaseServiceAccountPath) {
+    this.firebaseServiceAccountPath = firebaseServiceAccountPath;
   }
 }
