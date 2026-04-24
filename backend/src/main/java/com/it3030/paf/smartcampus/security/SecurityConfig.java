@@ -37,6 +37,7 @@ public class SecurityConfig {
             .requestMatchers("/error").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/auth/google").permitAll()
             .anyRequest().authenticated()
         );
 

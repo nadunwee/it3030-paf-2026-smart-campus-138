@@ -35,10 +35,24 @@ YAML equivalent: `app.security.bootstrap-admin-username` and `app.security.boots
 
 The bootstrap username is **reserved** for self-service registration: users cannot register an account with that name.
 
+### Google login (optional)
+
+Set these when enabling Google sign-in:
+
+| Variable | Purpose |
+|----------|---------|
+| `GOOGLE_LOGIN_ENABLED` | Set `true` to enable Google login endpoint |
+| `GOOGLE_CLIENT_ID` | Google OAuth Web Client ID |
+
+Frontend env (`frontend/.env`) also needs:
+
+- `VITE_GOOGLE_CLIENT_ID=<same Google client id>`
+
 ### API
 
-- `POST /api/v1/auth/register` — public; creates a **USER** account (password min 8 characters).
-- `GET /api/v1/auth/me` — authenticated; returns `{ "username", "role": "USER" \| "ADMIN" }`.
+- `POST /api/v1/auth/register` — public; creates a **STUDENT** account (password min 8 characters).
+- `POST /api/v1/auth/google` — public; exchanges Google ID token for an app session token.
+- `GET /api/v1/auth/me` — authenticated; returns `{ "username", "role": "STUDENT" \| "TEACHER" \| "ADMIN" }`.
 - Facility resources under `/api/v1/resources` (see controllers).
 
 ## Frontend

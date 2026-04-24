@@ -40,6 +40,18 @@ export function setStoredAuth(
   )
 }
 
+export function setStoredAuthToken(
+  userId: number | undefined,
+  username: string,
+  token: string,
+  role: StoredRole,
+): void {
+  sessionStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ userId, username, token, role }),
+  )
+}
+
 export function clearStoredAuth(): void {
   sessionStorage.removeItem(STORAGE_KEY)
 }
@@ -174,4 +186,30 @@ export async function registerAccount(
 
 export async function getCurrentSessionUser(): Promise<MeResponse | null> {
   return apiFetch<MeResponse>('/api/v1/auth/me')
+}
+
+type GoogleLoginResponse = {
+  id: number
+  username: string
+  role: StoredRole
+  basicToken: string
+}
+
+export async function loginWithGoogleIdToken(idToken: string): Promise<void> {
+  const base = getApiBase()
+  const url = `${base}/api/v1/auth/google`
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ idToken }),
+  })
+  if (!res.ok) {
+    const msg = await parseError(res)
+    throw new Error(msg || 'Google login failed.')
+  }
+  const payload = (await res.json()) as GoogleLoginResponse
+  if (!payload.basicToken) {
+    throw new Error('Google login succeeded but no session token was returned.')
+  }
+  setStoredAuthToken(payload.id, payload.username, payload.basicToken, payload.role)
 }

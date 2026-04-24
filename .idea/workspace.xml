@@ -4,16 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1f2c02f-f648-4e56-bd0e-d156ce63b524" name="Changes" comment="add notifications">
+    <list default="true" id="c1f2c02f-f648-4e56-bd0e-d156ce63b524" name="Changes" comment="small errors fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/dto/DashboardSummaryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/dto/DashboardSummaryResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/BookingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/BookingRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/service/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/DashboardControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/it3030/paf/smartcampus/DashboardControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/dashboard.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/api/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/domain/UserAccount.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/repository/UserAccountRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AdminBootstrapRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AdminBootstrapRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AppSecurityProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/AppSecurityProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/it3030/paf/smartcampus/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/context/AuthContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/Login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +101,7 @@
       <workItem from="1776793180645" duration="3825000" />
       <workItem from="1776847573001" duration="10174000" />
       <workItem from="1776943893143" duration="4675000" />
-      <workItem from="1777022380100" duration="3052000" />
+      <workItem from="1777022380100" duration="5929000" />
     </task>
     <task id="LOCAL-00001" summary="added changes">
       <option name="closed" value="true" />
@@ -138,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776859533068</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="small errors fix">
+      <option name="closed" value="true" />
+      <created>1777029560857</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1777029560857</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,6 +174,7 @@
     <MESSAGE value="add booking management" />
     <MESSAGE value="add ticketing management" />
     <MESSAGE value="add notifications" />
-    <option name="LAST_COMMIT_MESSAGE" value="add notifications" />
+    <MESSAGE value="small errors fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="small errors fix" />
   </component>
 </project>

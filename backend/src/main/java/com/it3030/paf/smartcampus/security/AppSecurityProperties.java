@@ -11,6 +11,12 @@ public class AppSecurityProperties {
   /** Initial admin password (use ADMIN_PASSWORD env in production; never commit real secrets). */
   private String bootstrapAdminPassword = "admin123";
 
+  /** Enables Google login endpoint/token exchange. */
+  private boolean googleEnabled = false;
+
+  /** OAuth Client ID from Google Cloud console (Web application). */
+  private String googleClientId = "";
+
   public String getBootstrapAdminUsername() {
     return bootstrapAdminUsername;
   }
@@ -25,5 +31,21 @@ public class AppSecurityProperties {
 
   public void setBootstrapAdminPassword(String bootstrapAdminPassword) {
     this.bootstrapAdminPassword = bootstrapAdminPassword;
+  }
+
+  public boolean isGoogleEnabled() {
+    return googleEnabled;
+  }
+
+  public void setGoogleEnabled(boolean googleEnabled) {
+    this.googleEnabled = googleEnabled;
+  }
+
+  public String getGoogleClientId() {
+    return googleClientId;
+  }
+
+  public void setGoogleClientId(String googleClientId) {
+    this.googleClientId = googleClientId;
   }
 }

@@ -2,6 +2,7 @@ package com.it3030.paf.smartcampus.security;
 
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
+import com.it3030.paf.smartcampus.domain.enums.AuthProvider;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -40,6 +41,7 @@ public class AdminBootstrapRunner implements ApplicationRunner {
     admin.setUsername(username);
     admin.setPasswordHash(passwordEncoder.encode(securityProperties.getBootstrapAdminPassword()));
     admin.setRole(AppRole.ADMIN);
+    admin.setAuthProvider(AuthProvider.LOCAL);
     userAccountRepository.save(admin);
   }
 }

@@ -1,5 +1,6 @@
 package com.it3030.paf.smartcampus.domain;
 
+import com.it3030.paf.smartcampus.domain.enums.AuthProvider;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,6 +27,16 @@ public class UserAccount {
 
   @Column(name = "password_hash", nullable = false, length = 255)
   private String passwordHash;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "auth_provider", nullable = false, length = 16)
+  private AuthProvider authProvider;
+
+  @Column(name = "google_sub", unique = true, length = 128)
+  private String googleSub;
+
+  @Column(name = "email", length = 255)
+  private String email;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 16)
@@ -69,6 +80,30 @@ public class UserAccount {
     this.role = role;
   }
 
+  public AuthProvider getAuthProvider() {
+    return authProvider;
+  }
+
+  public void setAuthProvider(AuthProvider authProvider) {
+    this.authProvider = authProvider;
+  }
+
+  public String getGoogleSub() {
+    return googleSub;
+  }
+
+  public void setGoogleSub(String googleSub) {
+    this.googleSub = googleSub;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
   public OffsetDateTime getCreatedAt() {
     return createdAt;
   }
@@ -88,6 +123,9 @@ public class UserAccount {
   @PrePersist
   void onCreate() {
     OffsetDateTime now = OffsetDateTime.now();
+    if (authProvider == null) {
+      authProvider = AuthProvider.LOCAL;
+    }
     if (createdAt == null) {
       createdAt = now;
     }

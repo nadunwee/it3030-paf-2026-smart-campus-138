@@ -1,12 +1,16 @@
 package com.it3030.paf.smartcampus.api.controller;
 
+import com.it3030.paf.smartcampus.api.dto.AuthSessionResponse;
+import com.it3030.paf.smartcampus.api.dto.GoogleLoginRequest;
 import com.it3030.paf.smartcampus.api.dto.MeResponse;
 import com.it3030.paf.smartcampus.api.dto.RegisterRequest;
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
+import com.it3030.paf.smartcampus.domain.enums.AuthProvider;
 import com.it3030.paf.smartcampus.exception.DuplicateUsernameException;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import com.it3030.paf.smartcampus.security.AppSecurityProperties;
+import com.it3030.paf.smartcampus.service.GoogleAuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +29,17 @@ public class AuthController {
   private final UserAccountRepository userAccountRepository;
   private final PasswordEncoder passwordEncoder;
   private final AppSecurityProperties securityProperties;
+  private final GoogleAuthService googleAuthService;
 
   public AuthController(
       UserAccountRepository userAccountRepository,
       PasswordEncoder passwordEncoder,
-      AppSecurityProperties securityProperties) {
+      AppSecurityProperties securityProperties,
+      GoogleAuthService googleAuthService) {
     this.userAccountRepository = userAccountRepository;
     this.passwordEncoder = passwordEncoder;
     this.securityProperties = securityProperties;
+    this.googleAuthService = googleAuthService;
   }
 
   @PostMapping("/register")
@@ -51,8 +58,14 @@ public class AuthController {
     account.setUsername(username);
     account.setPasswordHash(passwordEncoder.encode(request.getPassword()));
     account.setRole(AppRole.STUDENT);
+    account.setAuthProvider(AuthProvider.LOCAL);
     userAccountRepository.save(account);
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @PostMapping("/google")
+  public ResponseEntity<AuthSessionResponse> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+    return ResponseEntity.ok(googleAuthService.loginWithGoogle(request.getIdToken()));
   }
 
   @GetMapping("/me")

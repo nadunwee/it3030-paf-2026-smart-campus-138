@@ -11,6 +11,7 @@ import {
   clearStoredAuth,
   getCurrentSessionUser,
   getStoredAuth,
+  loginWithGoogleIdToken,
   updateStoredRole,
   verifyCredentials,
   type StoredRole,
@@ -27,6 +28,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   login: (username: string, password: string) => Promise<void>
+  loginWithGoogle: (idToken: string) => Promise<void>
   logout: () => void
   isAdmin: boolean
   isStudent: boolean
@@ -94,6 +96,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const loginWithGoogle = useCallback(async (idToken: string) => {
+    await loginWithGoogleIdToken(idToken)
+    const s = getStoredAuth()
+    if (!s?.username || !s.role) {
+      throw new Error('Google login failed. Please try again.')
+    }
+    setUser({
+      id: s.userId,
+      username: s.username,
+      role: s.role,
+    })
+  }, [])
+
   const logout = useCallback(() => {
     clearStoredAuth()
     setUser(null)
@@ -103,12 +118,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       login,
+      loginWithGoogle,
       logout,
       isAdmin: user?.role === 'ADMIN',
       isStudent: user?.role === 'STUDENT',
       isTeacher: user?.role === 'TEACHER',
     }),
-    [user, login, logout],
+    [user, login, loginWithGoogle, logout],
   )
 
   return (
