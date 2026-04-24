@@ -18,8 +18,11 @@ import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
+import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
 import com.it3030.paf.smartcampus.repository.NotificationRepository;
+import com.it3030.paf.smartcampus.repository.TicketingRepository;
+import com.it3030.paf.smartcampus.repository.TicketMessageRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
@@ -41,12 +44,18 @@ public class ResourceControllerTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private FacilityResourceRepository repository;
   @Autowired private NotificationRepository notificationRepository;
+  @Autowired private BookingRepository bookingRepository;
+  @Autowired private TicketingRepository ticketingRepository;
+  @Autowired private TicketMessageRepository ticketMessageRepository;
   @Autowired private UserAccountRepository userAccountRepository;
   @Autowired private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
+    ticketMessageRepository.deleteAll();
+    ticketingRepository.deleteAll();
     notificationRepository.deleteAll();
+    bookingRepository.deleteAll();
     repository.deleteAll();
     userAccountRepository.deleteAll();
   }

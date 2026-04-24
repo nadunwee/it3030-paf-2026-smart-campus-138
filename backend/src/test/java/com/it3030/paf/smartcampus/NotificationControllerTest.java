@@ -14,7 +14,10 @@ import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
 import com.it3030.paf.smartcampus.domain.enums.NotificationType;
 import com.it3030.paf.smartcampus.domain.enums.RelatedEntityType;
+import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.NotificationRepository;
+import com.it3030.paf.smartcampus.repository.TicketingRepository;
+import com.it3030.paf.smartcampus.repository.TicketMessageRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,11 +34,17 @@ public class NotificationControllerTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private NotificationRepository notificationRepository;
+  @Autowired private BookingRepository bookingRepository;
+  @Autowired private TicketingRepository ticketingRepository;
+  @Autowired private TicketMessageRepository ticketMessageRepository;
   @Autowired private UserAccountRepository userAccountRepository;
 
   @BeforeEach
   void setUp() {
+    ticketMessageRepository.deleteAll();
+    ticketingRepository.deleteAll();
     notificationRepository.deleteAll();
+    bookingRepository.deleteAll();
     userAccountRepository.deleteAll();
   }
 
