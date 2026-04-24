@@ -18,6 +18,8 @@ import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.repository.BookingRepository;
 import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
 import com.it3030.paf.smartcampus.repository.NotificationRepository;
+import com.it3030.paf.smartcampus.repository.TicketingRepository;
+import com.it3030.paf.smartcampus.repository.TicketMessageRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +40,14 @@ public class BookingControllerTest {
   @Autowired private BookingRepository bookingRepository;
   @Autowired private FacilityResourceRepository facilityResourceRepository;
   @Autowired private NotificationRepository notificationRepository;
+  @Autowired private TicketingRepository ticketingRepository;
+  @Autowired private TicketMessageRepository ticketMessageRepository;
   @Autowired private UserAccountRepository userAccountRepository;
 
   @BeforeEach
   void setUp() {
+    ticketMessageRepository.deleteAll();
+    ticketingRepository.deleteAll();
     notificationRepository.deleteAll();
     bookingRepository.deleteAll();
     facilityResourceRepository.deleteAll();
