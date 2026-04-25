@@ -30,4 +30,11 @@ public final class TicketingSpecifications {
     }
     return (root, query, cb) -> cb.equal(root.get("priority"), priority);
   }
+
+  public static Specification<Ticketing> assignedTo(Long userId) {
+    if (userId == null) {
+      return null;
+    }
+    return (root, query, cb) -> cb.equal(root.get("assignedAdmin").get("id"), userId);
+  }
 }

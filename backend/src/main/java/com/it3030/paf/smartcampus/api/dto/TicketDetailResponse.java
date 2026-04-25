@@ -6,6 +6,7 @@ public class TicketDetailResponse {
 
   private TicketResponse ticket;
   private List<TicketMessageResponse> messages;
+  private List<TicketAttachmentResponse> attachments;
 
   public TicketResponse getTicket() {
     return ticket;
@@ -21,5 +22,13 @@ public class TicketDetailResponse {
 
   public void setMessages(List<TicketMessageResponse> messages) {
     this.messages = messages;
+  }
+
+  public List<TicketAttachmentResponse> getAttachments() {
+    return attachments;
+  }
+
+  public void setAttachments(List<TicketAttachmentResponse> attachments) {
+    this.attachments = attachments;
   }
 }

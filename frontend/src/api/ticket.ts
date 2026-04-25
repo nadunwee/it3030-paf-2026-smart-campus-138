@@ -2,8 +2,19 @@ import type { SpringPage } from './resource'
 
 export type TicketCategory = 'TECHNICAL' | 'FACILITY' | 'STUDENT_RELATED' | 'OTHER'
 export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH'
-export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
-export type TicketSenderRole = 'STUDENT' | 'ADMIN'
+export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED' | 'REJECTED'
+export type TicketSenderRole = 'STUDENT' | 'ADMIN' | 'STAFF'
+
+export interface TicketAttachmentBody {
+  fileName: string
+  contentType: string
+  dataUrl: string
+}
+
+export interface TicketAttachmentResponse extends TicketAttachmentBody {
+  attachmentId: number
+  uploadedAt: string
+}
 
 export interface TicketResponse {
   ticketId: number
@@ -12,12 +23,21 @@ export interface TicketResponse {
   category: TicketCategory
   subject: string
   description: string
+  resourceId: number | null
+  resourceLabel: string | null
+  location: string | null
+  preferredContactDetails: string | null
   status: TicketStatus
   priority: TicketPriority
   createdAt: string
   updatedAt: string
   closedAt: string | null
+  resolutionNotes: string | null
+  rejectionReason: string | null
   assignedAdminId: number | null
+  assignedStaffId: number | null
+  assignedStaffName: string | null
+  attachmentCount: number
 }
 
 export interface TicketMessageResponse {
@@ -27,18 +47,24 @@ export interface TicketMessageResponse {
   senderName: string
   messageContent: string
   sentAt: string
+  editedAt: string | null
 }
 
 export interface TicketDetailResponse {
   ticket: TicketResponse
   messages: TicketMessageResponse[]
+  attachments: TicketAttachmentResponse[]
 }
 
 export interface TicketCreateBody {
   category: TicketCategory
   subject: string
   description: string
+  resourceId?: number
+  location?: string
+  preferredContactDetails: string
   priority?: TicketPriority
+  attachments?: TicketAttachmentBody[]
 }
 
 export interface TicketReplyBody {
@@ -47,6 +73,12 @@ export interface TicketReplyBody {
 
 export interface TicketStatusUpdateBody {
   status: Exclude<TicketStatus, 'CLOSED'>
+  resolutionNotes?: string
+  reason?: string
+}
+
+export interface TicketAssignmentBody {
+  assignedStaffId: number | null
 }
 
 export interface TicketOpenCountResponse {

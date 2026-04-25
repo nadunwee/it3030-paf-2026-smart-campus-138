@@ -1,7 +1,9 @@
 package com.it3030.paf.smartcampus.api.controller;
 
+import com.it3030.paf.smartcampus.api.dto.TicketAssignmentRequest;
 import com.it3030.paf.smartcampus.api.dto.TicketCreateRequest;
 import com.it3030.paf.smartcampus.api.dto.TicketDetailResponse;
+import com.it3030.paf.smartcampus.api.dto.TicketMessageUpdateRequest;
 import com.it3030.paf.smartcampus.api.dto.TicketOpenCountResponse;
 import com.it3030.paf.smartcampus.api.dto.TicketReplyRequest;
 import com.it3030.paf.smartcampus.api.dto.TicketResponse;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +43,7 @@ public class TicketingController {
   }
 
   @PostMapping
-  @PreAuthorize("hasRole('STUDENT')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER')")
   public ResponseEntity<TicketDetailResponse> createTicket(
       @Valid @RequestBody TicketCreateRequest request,
       Authentication authentication) {
@@ -49,7 +52,7 @@ public class TicketingController {
   }
 
   @GetMapping("/my")
-  @PreAuthorize("hasRole('STUDENT')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER')")
   public ResponseEntity<Page<TicketResponse>> listMyTickets(
       @RequestParam(defaultValue = "0", name = "page") int page,
       @RequestParam(defaultValue = "20", name = "size") int size,
@@ -60,20 +63,22 @@ public class TicketingController {
   }
 
   @GetMapping
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
   public ResponseEntity<Page<TicketResponse>> listAllTickets(
       @RequestParam(required = false, name = "status") TicketStatus status,
       @RequestParam(required = false, name = "category") TicketCategory category,
       @RequestParam(required = false, name = "priority") TicketPriority priority,
       @RequestParam(defaultValue = "0", name = "page") int page,
-      @RequestParam(defaultValue = "20", name = "size") int size) {
+      @RequestParam(defaultValue = "20", name = "size") int size,
+      Authentication authentication) {
     validatePage(page, size);
     PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-    return ResponseEntity.ok(ticketingService.listAllTickets(status, category, priority, pageable));
+    return ResponseEntity.ok(
+        ticketingService.listVisibleStaffTickets(status, category, priority, authentication.getName(), pageable));
   }
 
   @GetMapping("/{ticketId}")
-  @PreAuthorize("hasAnyRole('STUDENT','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<TicketDetailResponse> getTicket(
       @PathVariable("ticketId") Long ticketId,
       Authentication authentication) {
@@ -81,7 +86,7 @@ public class TicketingController {
   }
 
   @PostMapping("/{ticketId}/messages")
-  @PreAuthorize("hasAnyRole('STUDENT','ADMIN')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
   public ResponseEntity<TicketDetailResponse> replyToTicket(
       @PathVariable("ticketId") Long ticketId,
       @Valid @RequestBody TicketReplyRequest request,
@@ -92,17 +97,53 @@ public class TicketingController {
   }
 
   @PatchMapping("/{ticketId}/status")
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
   public ResponseEntity<TicketResponse> updateTicketStatus(
       @PathVariable("ticketId") Long ticketId,
       @Valid @RequestBody TicketStatusUpdateRequest request,
       Authentication authentication) {
-    TicketResponse updated = ticketingService.updateTicketStatus(ticketId, request.getStatus(), authentication.getName());
+    TicketResponse updated =
+        ticketingService.updateTicketStatus(
+            ticketId,
+            request.getStatus(),
+            request.getResolutionNotes(),
+            request.getReason(),
+            authentication.getName());
     return ResponseEntity.ok(updated);
   }
 
+  @PatchMapping("/{ticketId}/assignment")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<TicketResponse> assignTicket(
+      @PathVariable("ticketId") Long ticketId,
+      @Valid @RequestBody TicketAssignmentRequest request,
+      Authentication authentication) {
+    TicketResponse updated =
+        ticketingService.assignTicket(ticketId, request.getAssignedStaffId(), authentication.getName());
+    return ResponseEntity.ok(updated);
+  }
+
+  @PatchMapping("/{ticketId}/messages/{messageId}")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
+  public ResponseEntity<TicketDetailResponse> updateMessage(
+      @PathVariable("ticketId") Long ticketId,
+      @PathVariable("messageId") Long messageId,
+      @Valid @RequestBody TicketMessageUpdateRequest request,
+      Authentication authentication) {
+    return ResponseEntity.ok(ticketingService.updateMessage(ticketId, messageId, request, authentication.getName()));
+  }
+
+  @DeleteMapping("/{ticketId}/messages/{messageId}")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
+  public ResponseEntity<TicketDetailResponse> deleteMessage(
+      @PathVariable("ticketId") Long ticketId,
+      @PathVariable("messageId") Long messageId,
+      Authentication authentication) {
+    return ResponseEntity.ok(ticketingService.deleteMessage(ticketId, messageId, authentication.getName()));
+  }
+
   @PostMapping("/{ticketId}/close")
-  @PreAuthorize("hasRole('STUDENT')")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER')")
   public ResponseEntity<TicketResponse> closeTicket(
       @PathVariable("ticketId") Long ticketId,
       Authentication authentication) {

@@ -126,6 +126,7 @@ public class UserManagementService {
 
     // Keep dashboard counts and module lists in sync by removing user-owned records before deletion.
     bookingRepository.deleteByBookedByUserId(target.getId());
+    ticketingRepository.clearAssignedAdmin(target.getId());
     ticketMessageRepository.deleteByTicketStudentId(target.getId());
     ticketingRepository.deleteByStudentId(target.getId());
     ticketMessageRepository.deleteBySenderId(target.getId());

@@ -76,7 +76,7 @@ export default function Dashboard() {
       title: 'Maintenance & Tickets',
       description: 'Report issues and monitor progress for maintenance tasks.',
       icon: Wrench,
-      status: (isAdmin || isStudent ? 'available' : 'coming-soon') as ModuleStatus,
+      status: (isAdmin || isStudent || isTeacher ? 'available' : 'coming-soon') as ModuleStatus,
       link: '/tickets',
     },
     ...(isAdmin
@@ -140,7 +140,7 @@ export default function Dashboard() {
                 {isAdmin
                   ? 'You can create, edit, and remove resources, review all statuses, and approve bookings.'
                   : isTeacher
-                    ? 'You can browse resources and submit booking requests with your teacher permissions.'
+                    ? 'You can browse resources, submit booking requests, and handle assigned tickets.'
                     : 'You can browse resources, submit booking requests, and manage your tickets.'}
               </p>
             </div>

@@ -13,12 +13,21 @@ public class TicketResponse {
   private TicketCategory category;
   private String subject;
   private String description;
+  private Long resourceId;
+  private String resourceLabel;
+  private String location;
+  private String preferredContactDetails;
   private TicketStatus status;
   private TicketPriority priority;
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
   private OffsetDateTime closedAt;
+  private String resolutionNotes;
+  private String rejectionReason;
   private Long assignedAdminId;
+  private Long assignedStaffId;
+  private String assignedStaffName;
+  private int attachmentCount;
 
   public Long getTicketId() {
     return ticketId;
@@ -68,6 +77,38 @@ public class TicketResponse {
     this.description = description;
   }
 
+  public Long getResourceId() {
+    return resourceId;
+  }
+
+  public void setResourceId(Long resourceId) {
+    this.resourceId = resourceId;
+  }
+
+  public String getResourceLabel() {
+    return resourceLabel;
+  }
+
+  public void setResourceLabel(String resourceLabel) {
+    this.resourceLabel = resourceLabel;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
+
+  public String getPreferredContactDetails() {
+    return preferredContactDetails;
+  }
+
+  public void setPreferredContactDetails(String preferredContactDetails) {
+    this.preferredContactDetails = preferredContactDetails;
+  }
+
   public TicketStatus getStatus() {
     return status;
   }
@@ -108,11 +149,51 @@ public class TicketResponse {
     this.closedAt = closedAt;
   }
 
+  public String getResolutionNotes() {
+    return resolutionNotes;
+  }
+
+  public void setResolutionNotes(String resolutionNotes) {
+    this.resolutionNotes = resolutionNotes;
+  }
+
+  public String getRejectionReason() {
+    return rejectionReason;
+  }
+
+  public void setRejectionReason(String rejectionReason) {
+    this.rejectionReason = rejectionReason;
+  }
+
   public Long getAssignedAdminId() {
     return assignedAdminId;
   }
 
   public void setAssignedAdminId(Long assignedAdminId) {
     this.assignedAdminId = assignedAdminId;
+  }
+
+  public Long getAssignedStaffId() {
+    return assignedStaffId;
+  }
+
+  public void setAssignedStaffId(Long assignedStaffId) {
+    this.assignedStaffId = assignedStaffId;
+  }
+
+  public String getAssignedStaffName() {
+    return assignedStaffName;
+  }
+
+  public void setAssignedStaffName(String assignedStaffName) {
+    this.assignedStaffName = assignedStaffName;
+  }
+
+  public int getAttachmentCount() {
+    return attachmentCount;
+  }
+
+  public void setAttachmentCount(int attachmentCount) {
+    this.attachmentCount = attachmentCount;
   }
 }

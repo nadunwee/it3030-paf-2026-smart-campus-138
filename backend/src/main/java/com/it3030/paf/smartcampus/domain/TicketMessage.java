@@ -44,6 +44,9 @@ public class TicketMessage {
   @Column(name = "sent_at", nullable = false, updatable = false)
   private OffsetDateTime sentAt;
 
+  @Column(name = "edited_at")
+  private OffsetDateTime editedAt;
+
   @PrePersist
   void onCreate() {
     if (sentAt == null) {
@@ -101,5 +104,13 @@ public class TicketMessage {
 
   public void setSentAt(OffsetDateTime sentAt) {
     this.sentAt = sentAt;
+  }
+
+  public OffsetDateTime getEditedAt() {
+    return editedAt;
+  }
+
+  public void setEditedAt(OffsetDateTime editedAt) {
+    this.editedAt = editedAt;
   }
 }

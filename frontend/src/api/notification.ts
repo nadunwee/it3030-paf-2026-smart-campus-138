@@ -8,7 +8,9 @@ export type NotificationType =
   | 'TICKET_CREATED'
   | 'TICKET_ADMIN_REPLY'
   | 'TICKET_STUDENT_REPLY'
+  | 'TICKET_ASSIGNED'
   | 'TICKET_RESOLVED'
+  | 'TICKET_REJECTED'
   | 'TICKET_CLOSED'
   | 'SYSTEM'
 

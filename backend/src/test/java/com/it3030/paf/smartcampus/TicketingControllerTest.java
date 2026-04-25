@@ -3,6 +3,7 @@ package com.it3030.paf.smartcampus;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,6 +55,7 @@ public class TicketingControllerTest {
 
   @Test
   void createTicket_userCreatesOpenTicketWithInitialMessage() throws Exception {
+    createUser("admin", AppRole.ADMIN);
     createUser("alice", AppRole.STUDENT);
 
     String json =
@@ -62,17 +64,159 @@ public class TicketingControllerTest {
           "category": "TECHNICAL",
           "subject": "WiFi not working",
           "description": "Cannot connect in lab",
-          "priority": "HIGH"
+          "location": "Lab 2",
+          "preferredContactDetails": "alice@example.edu",
+          "priority": "HIGH",
+          "attachments": [
+            {
+              "fileName": "wifi-error.png",
+              "contentType": "image/png",
+              "dataUrl": "data:image/png;base64,aGVsbG8="
+            }
+          ]
         }
         """;
 
+    String createdResponse =
+        mockMvc
+            .perform(
+                post("/api/v1/tickets")
+                    .with(user("alice").roles("STUDENT"))
+                    .contentType("application/json")
+                    .content(json))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.ticket.studentName", is("alice")))
+            .andExpect(jsonPath("$.ticket.status", is("OPEN")))
+            .andExpect(jsonPath("$.ticket.location", is("Lab 2")))
+            .andExpect(jsonPath("$.ticket.preferredContactDetails", is("alice@example.edu")))
+            .andExpect(jsonPath("$.ticket.attachmentCount", is(1)))
+            .andExpect(jsonPath("$.attachments", hasSize(1)))
+            .andExpect(jsonPath("$.messages", hasSize(1)))
+            .andExpect(jsonPath("$.messages[0].senderRole", is("STUDENT")))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    Integer ticketId = com.jayway.jsonpath.JsonPath.read(createdResponse, "$.ticket.ticketId");
+
     mockMvc
-        .perform(post("/api/v1/tickets").with(user("alice").roles("STUDENT")).contentType("application/json").content(json))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.ticket.studentName", is("alice")))
-        .andExpect(jsonPath("$.ticket.status", is("OPEN")))
-        .andExpect(jsonPath("$.messages", hasSize(1)))
-        .andExpect(jsonPath("$.messages[0].senderRole", is("STUDENT")));
+        .perform(get("/api/v1/tickets/{id}", ticketId).with(user("admin").roles("ADMIN")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.ticket.attachmentCount", is(1)))
+        .andExpect(jsonPath("$.attachments", hasSize(1)))
+        .andExpect(jsonPath("$.attachments[0].dataUrl", is("data:image/png;base64,aGVsbG8=")));
+  }
+
+  @Test
+  void adminCanRejectTicketOnlyWithReason() throws Exception {
+    createUser("admin", AppRole.ADMIN);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    Ticketing ticket = createTicket(alice, "Duplicate projector issue");
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{id}/status", ticket.getTicketId())
+                .with(user("admin").roles("ADMIN"))
+                .contentType("application/json")
+                .content("{ \"status\": \"REJECTED\" }"))
+        .andExpect(status().isBadRequest());
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{id}/status", ticket.getTicketId())
+                .with(user("admin").roles("ADMIN"))
+                .contentType("application/json")
+                .content("{ \"status\": \"REJECTED\", \"reason\": \"Duplicate request\" }"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("REJECTED")))
+        .andExpect(jsonPath("$.rejectionReason", is("Duplicate request")));
+  }
+
+  @Test
+  void assignedStaffCanProgressAndResolveWithNotes() throws Exception {
+    createUser("admin", AppRole.ADMIN);
+    UserAccount technician = createUser("tech", AppRole.TEACHER);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    Ticketing ticket = createTicket(alice, "Projector issue");
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{id}/assignment", ticket.getTicketId())
+                .with(user("admin").roles("ADMIN"))
+                .contentType("application/json")
+                .content("{ \"assignedStaffId\": " + technician.getId() + " }"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.assignedStaffId", is(technician.getId().intValue())))
+        .andExpect(jsonPath("$.assignedStaffName", is("tech")));
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{id}/status", ticket.getTicketId())
+                .with(user("tech").roles("TEACHER"))
+                .contentType("application/json")
+                .content("{ \"status\": \"IN_PROGRESS\" }"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("IN_PROGRESS")));
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{id}/status", ticket.getTicketId())
+                .with(user("tech").roles("TEACHER"))
+                .contentType("application/json")
+                .content("{ \"status\": \"RESOLVED\", \"resolutionNotes\": \"Replaced HDMI cable\" }"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("RESOLVED")))
+        .andExpect(jsonPath("$.resolutionNotes", is("Replaced HDMI cable")));
+  }
+
+  @Test
+  void commentOwnerCanEditAndAdminCanDelete() throws Exception {
+    createUser("admin", AppRole.ADMIN);
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    createUser("bob", AppRole.STUDENT);
+    Ticketing ticket = createTicket(alice, "AC issue");
+
+    String reply = """
+        { "messageText": "The room is too warm" }
+        """;
+    String response =
+        mockMvc
+            .perform(
+                post("/api/v1/tickets/{id}/messages", ticket.getTicketId())
+                    .with(user("alice").roles("STUDENT"))
+                    .contentType("application/json")
+                    .content(reply))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.messages", hasSize(2)))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    Integer messageId = com.jayway.jsonpath.JsonPath.read(response, "$.messages[1].messageId");
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{ticketId}/messages/{messageId}", ticket.getTicketId(), messageId)
+                .with(user("bob").roles("STUDENT"))
+                .contentType("application/json")
+                .content("{ \"messageText\": \"Trying to edit someone else\" }"))
+        .andExpect(status().isForbidden());
+
+    mockMvc
+        .perform(
+            patch("/api/v1/tickets/{ticketId}/messages/{messageId}", ticket.getTicketId(), messageId)
+                .with(user("alice").roles("STUDENT"))
+                .contentType("application/json")
+                .content("{ \"messageText\": \"The room is still too warm\" }"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.messages[1].messageContent", is("The room is still too warm")));
+
+    mockMvc
+        .perform(
+            delete("/api/v1/tickets/{ticketId}/messages/{messageId}", ticket.getTicketId(), messageId)
+                .with(user("admin").roles("ADMIN")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.messages", hasSize(1)));
   }
 
   @Test

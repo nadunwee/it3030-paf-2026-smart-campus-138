@@ -19,7 +19,7 @@ function formatNotificationTime(iso: string): string {
 }
 
 export function Navbar() {
-  const { user, logout, isAdmin, isStudent } = useAuth()
+  const { user, logout, isAdmin, isStudent, isTeacher } = useAuth()
   const navigate = useNavigate()
   const panelRef = useRef<HTMLDivElement | null>(null)
 
@@ -167,7 +167,7 @@ export function Navbar() {
                   Bookings
                 </Button>
               </Link>
-              {(isAdmin || isStudent) && (
+              {(isAdmin || isStudent || isTeacher) && (
                 <Link to="/tickets">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <ClipboardList className="h-4 w-4" />
@@ -332,7 +332,7 @@ export function Navbar() {
               Bookings
             </Button>
           </Link>
-          {(isAdmin || isStudent) && (
+          {(isAdmin || isStudent || isTeacher) && (
             <Link to="/tickets">
               <Button variant="ghost" size="sm" className="gap-1">
                 Tickets

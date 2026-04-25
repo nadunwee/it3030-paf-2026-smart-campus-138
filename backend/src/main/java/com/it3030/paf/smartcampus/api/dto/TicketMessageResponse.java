@@ -11,6 +11,7 @@ public class TicketMessageResponse {
   private String senderName;
   private String messageContent;
   private OffsetDateTime sentAt;
+  private OffsetDateTime editedAt;
 
   public Long getMessageId() {
     return messageId;
@@ -58,5 +59,13 @@ public class TicketMessageResponse {
 
   public void setSentAt(OffsetDateTime sentAt) {
     this.sentAt = sentAt;
+  }
+
+  public OffsetDateTime getEditedAt() {
+    return editedAt;
+  }
+
+  public void setEditedAt(OffsetDateTime editedAt) {
+    this.editedAt = editedAt;
   }
 }
