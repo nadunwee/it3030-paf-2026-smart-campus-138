@@ -37,6 +37,7 @@ function formatPeriod(iso: string): string {
 function statusClass(status: BookingStatus): string {
   if (status === 'APPROVED') return 'bg-[#e7f0fb] text-[#1f4f7f] border-[#bdd4ea]'
   if (status === 'REJECTED') return 'bg-[#f8ebe8] text-[#9f4336] border-[#e7c1ba]'
+  if (status === 'CANCELLED') return 'bg-[#f1f1f1] text-[#5f6368] border-[#d7d9dd]'
   return 'bg-[#efece5] text-[#6e5b2f] border-[#d8caa4]'
 }
 
@@ -53,6 +54,7 @@ export default function BookingManagement() {
   const [loadingBookings, setLoadingBookings] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [decisionBookingId, setDecisionBookingId] = useState<number | null>(null)
+  const [cancelBookingId, setCancelBookingId] = useState<number | null>(null)
   const [pendingCount, setPendingCount] = useState<number>(0)
 
   const durationMinutes = useMemo(() => {
@@ -182,6 +184,21 @@ export default function BookingManagement() {
     }
   }
 
+  const cancelBooking = async (bookingId: number) => {
+    setCancelBookingId(bookingId)
+    try {
+      await apiFetch(`/api/v1/bookings/${bookingId}/cancel`, {
+        method: 'POST',
+      })
+      toast.success('Booking cancelled')
+      await Promise.all([loadResources(), refreshData()])
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to cancel booking')
+    } finally {
+      setCancelBookingId(null)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -290,6 +307,7 @@ export default function BookingManagement() {
                       <TableHead>Name</TableHead>
                       <TableHead>Duration</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -302,6 +320,18 @@ export default function BookingManagement() {
                           <Badge variant="secondary" className={statusClass(booking.status)}>
                             {booking.status}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {booking.status === 'APPROVED' ? (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => void cancelBooking(booking.bookingId)}
+                              disabled={cancelBookingId === booking.bookingId}
+                            >
+                              {cancelBookingId === booking.bookingId ? 'Cancelling...' : 'Cancel'}
+                            </Button>
+                          ) : null}
                         </TableCell>
                       </TableRow>
                     ))}

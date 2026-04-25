@@ -2,6 +2,7 @@ package com.it3030.paf.smartcampus;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -169,6 +170,73 @@ public class BookingControllerTest {
                 .contentType("application/json")
                 .content("{\"status\":\"APPROVED\"}"))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  @WithMockUser(username = "alice", roles = "STUDENT")
+  void cancelApprovedBooking_ownerCanCancelAndFacilityBecomesAvailable() throws Exception {
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    FacilityResource facility = createFacility("Room 305");
+    Booking approved =
+        createBooking(
+            facility,
+            alice,
+            BookingStatus.APPROVED,
+            "2026-09-10T10:00:00Z",
+            "2026-09-10T11:00:00Z");
+
+    mockMvc
+        .perform(post("/api/v1/bookings/{id}/cancel", approved.getBookingId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("CANCELLED")))
+        .andExpect(jsonPath("$.approvedAt", nullValue()));
+
+    mockMvc
+        .perform(
+            get("/api/v1/resources")
+                .param("availableFrom", "2026-09-10T10:00:00Z")
+                .param("availableTo", "2026-09-10T11:00:00Z")
+                .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content", hasSize(1)))
+        .andExpect(jsonPath("$.content[0].id", is(facility.getId().intValue())));
+  }
+
+  @Test
+  @WithMockUser(username = "bob", roles = "STUDENT")
+  void cancelBooking_otherStudentForbidden() throws Exception {
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    createUser("bob", AppRole.STUDENT);
+    FacilityResource facility = createFacility("Room 401");
+    Booking approved =
+        createBooking(
+            facility,
+            alice,
+            BookingStatus.APPROVED,
+            "2026-10-01T09:00:00Z",
+            "2026-10-01T10:00:00Z");
+
+    mockMvc
+        .perform(post("/api/v1/bookings/{id}/cancel", approved.getBookingId()))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  @WithMockUser(username = "alice", roles = "STUDENT")
+  void cancelBooking_pendingRequestRejected() throws Exception {
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    FacilityResource facility = createFacility("Room 502");
+    Booking pending =
+        createBooking(
+            facility,
+            alice,
+            BookingStatus.PENDING,
+            "2026-10-15T13:00:00Z",
+            "2026-10-15T14:00:00Z");
+
+    mockMvc
+        .perform(post("/api/v1/bookings/{id}/cancel", pending.getBookingId()))
+        .andExpect(status().isBadRequest());
   }
 
   private UserAccount createUser(String username, AppRole role) {

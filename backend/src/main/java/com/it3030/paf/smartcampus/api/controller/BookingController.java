@@ -82,6 +82,15 @@ public class BookingController {
     return ResponseEntity.ok(response);
   }
 
+  @PostMapping("/{id}/cancel")
+  @PreAuthorize("hasAnyRole('STUDENT','TEACHER','ADMIN')")
+  public ResponseEntity<BookingResponse> cancelBooking(
+      @PathVariable("id") Long bookingId,
+      Authentication authentication) {
+    BookingResponse response = bookingService.cancelBooking(bookingId, authentication.getName());
+    return ResponseEntity.ok(response);
+  }
+
   @GetMapping("/pending/count")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<PendingCountResponse> pendingCount() {

@@ -1,6 +1,6 @@
 import type { SpringPage } from './resource'
 
-export type BookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+export type BookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
 
 export interface BookingResponse {
   bookingId: number
@@ -26,7 +26,7 @@ export interface BookingCreateBody {
 }
 
 export interface BookingDecisionBody {
-  status: Exclude<BookingStatus, 'PENDING'>
+  status: 'APPROVED' | 'REJECTED'
 }
 
 export interface PendingCountResponse {

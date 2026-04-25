@@ -196,6 +196,44 @@ public class BookingService {
     return toResponse(saved);
   }
 
+  @Transactional
+  public BookingResponse cancelBooking(Long bookingId, String username) {
+    UserAccount currentUser = getRequiredUser(username);
+    Booking booking =
+        bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+    if (!booking.getBookedByUser().getId().equals(currentUser.getId())) {
+      throw new AccessDeniedException("You can only cancel your own bookings");
+    }
+    if (booking.getStatus() != BookingStatus.APPROVED) {
+      throw new IllegalArgumentException("Only APPROVED bookings can be cancelled");
+    }
+
+    booking.setStatus(BookingStatus.CANCELLED);
+    booking.setApprovedAt(null);
+    Booking saved = bookingRepository.save(booking);
+
+    if (currentUser.getRole() != AppRole.ADMIN) {
+      notificationService.notifyAdmins(
+          NotificationType.BOOKING_CANCELLED,
+          "Booking cancelled",
+          currentUser.getUsername()
+              + " cancelled the approved booking for "
+              + saved.getFacilityName()
+              + " from "
+              + saved.getBookedFrom()
+              + " to "
+              + saved.getBookedTo()
+              + ".",
+          RelatedEntityType.BOOKING,
+          saved.getBookingId(),
+          "/bookings",
+          currentUser);
+    }
+
+    return toResponse(saved);
+  }
+
   @Transactional(readOnly = true)
   public long getPendingApprovalCount() {
     return bookingRepository.countByStatus(BookingStatus.PENDING);
