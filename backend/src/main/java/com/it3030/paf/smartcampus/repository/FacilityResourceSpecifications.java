@@ -7,6 +7,7 @@ import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import java.time.OffsetDateTime;
+import java.util.List;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Subquery;
@@ -78,7 +79,7 @@ public final class FacilityResourceSpecifications {
           .select(bookingRoot.get("bookingId"))
           .where(
               cb.equal(bookingRoot.get("facilityResource"), root),
-              cb.equal(bookingRoot.get("status"), BookingStatus.APPROVED),
+              bookingRoot.get("status").in(List.of(BookingStatus.PENDING, BookingStatus.APPROVED)),
               cb.lessThan(bookingRoot.get("bookedFrom"), to),
               cb.greaterThan(bookingRoot.get("bookedTo"), from));
 

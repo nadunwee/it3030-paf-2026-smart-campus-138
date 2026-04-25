@@ -12,10 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.it3030.paf.smartcampus.api.dto.ResourceCreateRequest;
 import com.it3030.paf.smartcampus.api.dto.ResourcePatchRequest;
 import com.it3030.paf.smartcampus.domain.AvailabilityWindow;
+import com.it3030.paf.smartcampus.domain.Booking;
 import com.it3030.paf.smartcampus.domain.FacilityResource;
 import com.it3030.paf.smartcampus.domain.Notification;
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.AppRole;
+import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceStatus;
 import com.it3030.paf.smartcampus.domain.enums.ResourceType;
 import com.it3030.paf.smartcampus.repository.BookingRepository;
@@ -146,6 +148,35 @@ public class ResourceControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "alice", roles = "STUDENT")
+  void getResources_availableWindowExcludesPendingBookedSlots() throws Exception {
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+
+    FacilityResource facility = new FacilityResource();
+    facility.setType(ResourceType.MEETING_ROOM);
+    facility.setCapacity(12);
+    facility.setLocation("Room 210");
+    facility.setStatus(ResourceStatus.ACTIVE);
+    repository.save(facility);
+
+    createBooking(
+        facility,
+        alice,
+        BookingStatus.PENDING,
+        "2026-05-03T09:00:00Z",
+        "2026-05-03T10:00:00Z");
+
+    mockMvc
+        .perform(
+            get("/api/v1/resources")
+                .param("availableFrom", "2026-05-03T09:30:00Z")
+                .param("availableTo", "2026-05-03T09:45:00Z")
+                .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content", hasSize(0)));
+  }
+
+  @Test
   @WithMockUser(roles = "ADMIN")
   void patchResources_adminUpdatesCapacity() throws Exception {
     FacilityResource active = new FacilityResource();
@@ -216,5 +247,28 @@ public class ResourceControllerTest {
     user.setPasswordHash("hash");
     user.setRole(role);
     return userAccountRepository.save(user);
+  }
+
+  private Booking createBooking(
+      FacilityResource facility,
+      UserAccount user,
+      BookingStatus status,
+      String fromIso,
+      String toIso) {
+    Booking booking = new Booking();
+    booking.setFacilityResource(facility);
+    booking.setBookedByUser(user);
+    booking.setBookedByUserName(user.getUsername());
+    booking.setFacilityName(facility.getType().name() + " - " + facility.getLocation());
+    booking.setPurpose("Resource search test");
+    booking.setDurationMinutes(
+        (int)
+            java.time.Duration.between(OffsetDateTime.parse(fromIso), OffsetDateTime.parse(toIso))
+                .toMinutes());
+    booking.setBookedFrom(OffsetDateTime.parse(fromIso));
+    booking.setBookedTo(OffsetDateTime.parse(toIso));
+    booking.setStatus(status);
+    booking.setApprovedAt(status == BookingStatus.APPROVED ? OffsetDateTime.now() : null);
+    return bookingRepository.save(booking);
   }
 }

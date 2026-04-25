@@ -18,6 +18,7 @@ import com.it3030.paf.smartcampus.repository.FacilityResourceRepository;
 import com.it3030.paf.smartcampus.repository.UserAccountRepository;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BookingService {
+
+  private static final List<BookingStatus> ACTIVE_SLOT_STATUSES =
+      List.of(BookingStatus.PENDING, BookingStatus.APPROVED);
 
   private final BookingRepository bookingRepository;
   private final FacilityResourceRepository facilityResourceRepository;
@@ -52,13 +56,13 @@ public class BookingService {
     validateBookingRange(request.getBookedFrom(), request.getBookedTo(), request.getDurationMinutes());
 
     boolean hasOverlap =
-        bookingRepository.existsByFacilityResourceIdAndStatusAndBookedFromLessThanAndBookedToGreaterThan(
+        bookingRepository.existsByFacilityResourceIdAndStatusInAndBookedFromLessThanAndBookedToGreaterThan(
             resource.getId(),
-            BookingStatus.APPROVED,
+            ACTIVE_SLOT_STATUSES,
             request.getBookedTo(),
             request.getBookedFrom());
     if (hasOverlap) {
-      throw new BookingConflictException("The facility is already booked for the selected time range.");
+      throw new BookingConflictException("Cannot select that time slot because it is already booked.");
     }
 
     Booking booking = new Booking();

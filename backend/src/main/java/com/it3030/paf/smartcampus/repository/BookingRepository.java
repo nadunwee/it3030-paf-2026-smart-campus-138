@@ -4,6 +4,7 @@ import com.it3030.paf.smartcampus.domain.Booking;
 import com.it3030.paf.smartcampus.domain.UserAccount;
 import com.it3030.paf.smartcampus.domain.enums.BookingStatus;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,9 +22,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
 
   long countByStatus(BookingStatus status);
 
-  boolean existsByFacilityResourceIdAndStatusAndBookedFromLessThanAndBookedToGreaterThan(
+  boolean existsByFacilityResourceIdAndStatusInAndBookedFromLessThanAndBookedToGreaterThan(
       Long facilityId,
-      BookingStatus status,
+      Collection<BookingStatus> statuses,
       OffsetDateTime bookedTo,
       OffsetDateTime bookedFrom);
 

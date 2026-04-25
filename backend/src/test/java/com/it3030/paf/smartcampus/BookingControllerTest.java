@@ -83,6 +83,38 @@ public class BookingControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "bob", roles = "STUDENT")
+  void createBooking_conflictingPendingBookingReturnsFriendlyTimeSlotError() throws Exception {
+    UserAccount alice = createUser("alice", AppRole.STUDENT);
+    createUser("bob", AppRole.STUDENT);
+    FacilityResource facility = createFacility("Hall B");
+
+    createBooking(
+        facility,
+        alice,
+        BookingStatus.PENDING,
+        "2026-05-01T10:00:00Z",
+        "2026-05-01T11:00:00Z");
+
+    String json =
+        """
+        {
+          "facilityId": %d,
+          "purpose": "Second request",
+          "durationMinutes": 60,
+          "bookedFrom": "2026-05-01T10:30:00Z",
+          "bookedTo": "2026-05-01T11:30:00Z"
+        }
+        """
+            .formatted(facility.getId());
+
+    mockMvc
+        .perform(post("/api/v1/bookings").contentType("application/json").content(json))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message", is("Cannot select that time slot because it is already booked.")));
+  }
+
+  @Test
   @WithMockUser(username = "admin", roles = "ADMIN")
   void approveBooking_blocksOverlappingApproval() throws Exception {
     createUser("admin", AppRole.ADMIN);
